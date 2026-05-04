@@ -1,0 +1,131 @@
+<div class="page-header">
+  <div>
+    <h1>Products</h1>
+    <p>Manage your inventory and product details</p>
+  </div>
+  <button class="btn btn-primary" (click)="toggleForm()">
+    {{ showForm ? 'Cancel' : 'Add Product' }}
+  </button>
+</div>
+
+<!-- Product Form Modal/Panel -->
+<div *ngIf="showForm" class="form-container glass card animate-slide-down">
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Product Name</label>
+        <input type="text" name="name" [(ngModel)]="currentProduct.name" required>
+      </div>
+      <div class="input-group">
+        <label>Brand</label>
+        <input type="text" name="brand" [(ngModel)]="currentProduct.brand">
+      </div>
+      <div class="input-group">
+        <label>Type</label>
+        <select name="type" [(ngModel)]="currentProduct.type">
+          <option value="PERISHABLE">Perishable</option>
+          <option value="NON_PERISHABLE">Non-Perishable</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Category</label>
+        <select name="category" [(ngModel)]="currentProduct.category">
+          <option [ngValue]="null">Select Category</option>
+          <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Shop</label>
+        <select name="shop" [(ngModel)]="currentProduct.shop">
+          <option [ngValue]="null">Select Shop</option>
+          <option *ngFor="let shop of shops" [ngValue]="shop">{{ shop.name }}</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>MRP (Standard Price)</label>
+        <input type="number" name="mrp" [(ngModel)]="currentProduct.mrp" required placeholder="0.00">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="!productForm.valid">
+        {{ isEditing ? 'Update Product' : 'Create Product' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="toggleForm()">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading && !showForm" class="products-content">
+  <!-- Desktop Table View -->
+  <div class="table-container desktop-only glass">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>SKU</th>
+          <th>Brand</th>
+          <th>Type</th>
+          <th>MRP</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td><span class="name">{{ product.name }}</span></td>
+          <td><code>{{ product.sku }}</code></td>
+          <td>{{ product.brand }}</td>
+          <td><span class="badge">{{ product.type }}</span></td>
+          <td><span class="mrp-text">{{ product.mrp | inr }}</span></td>
+          <td>
+            <span class="stock-count" [class.low]="(product.availableStock || 0) < 10">
+              {{ product.availableStock || 0 }}
+            </span>
+          </td>
+          <td>
+            <span class="status-indicator" [class.active]="product.isActive">
+              {{ product.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <div class="actions">
+              <button class="icon-btn edit" (click)="editProduct(product)">✏️</button>
+              <button class="icon-btn delete" (click)="deleteProduct(product.id)">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Card View -->
+  <div class="mobile-only card-grid">
+    <div class="product-card glass" *ngFor="let product of products">
+      <div class="card-header">
+        <h3>{{ product.name }}</h3>
+        <code>{{ product.sku }}</code>
+      </div>
+      <div class="card-body">
+        <p>Brand: {{ product.brand }}</p>
+        <p>Type: {{ product.type }}</p>
+      </div>
+      <div class="card-footer">
+        <div class="actions">
+          <button class="icon-btn edit" (click)="editProduct(product)">✏️</button>
+          <button class="icon-btn delete" (click)="deleteProduct(product.id)">🗑️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="products.length === 0" class="empty-state card">
+    <span class="empty-icon">📦</span>
+    <h3>No Products Found</h3>
+    <p>Start by adding your first product to the system.</p>
+  </div>
+</div>

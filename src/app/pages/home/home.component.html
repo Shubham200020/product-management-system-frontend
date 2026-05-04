@@ -1,0 +1,115 @@
+<div class="home-container">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <div class="welcome-card glass">
+      <div class="welcome-content">
+        <h1>Welcome to Product Management System</h1>
+        <p>Manage your products, shops, and sales all in one place</p>
+      </div>
+      <div class="welcome-decoration">
+        <div class="decoration-circle"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div *ngFor="let stat of stats; let i = index" 
+         class="stat-card glass animate-slide-up"
+         [style.animation-delay]="(i * 0.1) + 's'"
+         [routerLink]="i === 0 ? '/dashboard/product-catalog' : 
+                      i === 1 || i === 4 ? '/dashboard/inventory-report' : 
+                      i === 3 ? '/dashboard/profit-report' :
+                      i === 2 ? '/dashboard/sales' : null"
+         style="cursor: pointer">
+      <div class="card-content">
+        <div class="stat-icon">{{ stat.icon }}</div>
+        <div class="stat-title">{{ stat.title }}</div>
+      </div>
+      
+      <div class="stat-value">{{ stat.value }}</div>
+      
+      <div class="stat-footer">
+        <span class="stat-change">{{ stat.change }}</span>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" [style.background]="stat.gradient"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-grid">
+      <div class="action-card" style="border-left: 4px solid #6366f1;">
+        <div class="action-icon">➕</div>
+        <div class="action-content">
+          <h3>Add New Product</h3>
+          <p>Create a new product in your inventory</p>
+        </div>
+        <span class="action-arrow">→</span>
+      </div>
+
+      <div class="action-card" style="border-left: 4px solid #10b981;">
+        <div class="action-icon">📊</div>
+        <div class="action-content">
+          <h3>View Sales</h3>
+          <p>Check your latest sales transactions</p>
+        </div>
+        <span class="action-arrow">→</span>
+      </div>
+
+      <div class="action-card" style="border-left: 4px solid #ec4899;">
+        <div class="action-icon">🏪</div>
+        <div class="action-content">
+          <h3>Manage Shops</h3>
+          <p>Update shop details and settings</p>
+        </div>
+        <span class="action-arrow">→</span>
+      </div>
+
+      <div class="action-card" style="border-left: 4px solid #22d3ee;">
+        <div class="action-icon">👥</div>
+        <div class="action-content">
+          <h3>User Management</h3>
+          <p>Manage system users and permissions</p>
+        </div>
+        <span class="action-arrow">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="recent-activity">
+    <h2>System Status</h2>
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="activity-indicator" style="background: var(--success);"></div>
+        <div class="activity-content">
+          <p class="activity-title">System Status</p>
+          <p class="activity-time">All systems operational</p>
+        </div>
+        <div class="activity-badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">Active</div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-indicator" style="background: #f59e0b;"></div>
+        <div class="activity-content">
+          <p class="activity-title">Database Connection</p>
+          <p class="activity-time">Connected and running smoothly</p>
+        </div>
+        <div class="activity-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Connected</div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-indicator" style="background: var(--accent);"></div>
+        <div class="activity-content">
+          <p class="activity-title">API Server</p>
+          <p class="activity-time">Running at optimal performance</p>
+        </div>
+        <div class="activity-badge" style="background: rgba(34, 211, 238, 0.2); color: var(--accent);">Optimal</div>
+      </div>
+    </div>
+  </div>
+</div>

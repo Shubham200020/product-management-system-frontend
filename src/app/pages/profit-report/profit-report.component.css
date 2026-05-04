@@ -1,0 +1,65 @@
+.report-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 32px;
+  margin-bottom: 32px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.data-table th {
+  background: rgba(15, 23, 42, 0.4);
+  color: #94a3b8;
+  padding: 20px;
+  text-align: left;
+}
+
+.data-table td {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.name {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.profit-text {
+  font-weight: 800;
+  color: #10b981;
+}
+
+.profit-text.highlight {
+  font-size: 1.2rem;
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.cost-text {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}

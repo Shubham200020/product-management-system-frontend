@@ -1,0 +1,67 @@
+<div class="profile-container animate-fade-in">
+  <div class="glass-card profile-card">
+    <div class="profile-header">
+      <div class="profile-image-container">
+        <div class="image-wrapper" (click)="fileInput.click()">
+          <img *ngIf="user.profilePicture" [src]="user.profilePicture" alt="Profile">
+          <div *ngIf="!user.profilePicture" class="profile-placeholder">
+            {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
+          </div>
+          <div class="image-overlay">
+            <span>Change</span>
+          </div>
+        </div>
+        <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
+      </div>
+      <h2>Edit Profile</h2>
+      <p>Update your personal information</p>
+    </div>
+
+    <div *ngIf="loading" class="loader-container">
+      <div class="loader"></div>
+    </div>
+
+    <form *ngIf="!loading" (ngSubmit)="onSubmit()" #profileForm="ngForm">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" name="name" [(ngModel)]="user.name" required placeholder="Your Name">
+        </div>
+
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" name="email" [(ngModel)]="user.email" (ngModelChange)="onEmailChange($event)" required placeholder="Your Email">
+          <div class="field-status">
+            <span *ngIf="checkingEmail" class="status-checking">Checking availability...</span>
+            <span *ngIf="!checkingEmail && !emailAvailable && user.email !== originalEmail" class="status-error">Email already taken</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Phone Number</label>
+          <input type="text" name="phone" [(ngModel)]="user.phone" (ngModelChange)="onPhoneChange($event)" required pattern="[0-9]{10}" placeholder="10 digit phone">
+          <div class="field-status">
+            <span *ngIf="checkingPhone" class="status-checking">Checking availability...</span>
+            <span *ngIf="!checkingPhone && !phoneAvailable && user.phone !== originalPhone" class="status-error">Phone number already taken</span>
+          </div>
+        </div>
+
+        <div class="input-group disabled">
+          <label>Role</label>
+          <input type="text" name="role" [ngModel]="user.role" disabled class="disabled-input">
+        </div>
+      </div>
+
+      <div class="messages">
+        <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="saving || !profileForm.valid">
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

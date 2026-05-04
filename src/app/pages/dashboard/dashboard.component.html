@@ -1,0 +1,73 @@
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="!isSidebarOpen" [class.mobile-open]="isSidebarOpen">
+    <div class="sidebar-header-mobile" *ngIf="isSidebarOpen">
+      <button class="close-sidebar" (click)="toggleSidebar()">✕</button>
+    </div>
+    <div class="logo-area">
+      <div class="logo-icon">{{ isAdmin ? 'A' : 'S' }}</div>
+      <span *ngIf="isSidebarOpen" class="logo-text">{{ isAdmin ? 'Admin Panel' : 'Shop Manager' }}</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/dashboard/home" routerLinkActive="active" class="nav-item">
+        <span class="icon">🏠</span>
+        <span *ngIf="isSidebarOpen">Dashboard</span>
+      </a>
+      <a *ngIf="isAdmin" routerLink="/dashboard/users" routerLinkActive="active" class="nav-item">
+        <span class="icon">👥</span>
+        <span *ngIf="isSidebarOpen">Manage Users</span>
+      </a>
+      <a routerLink="/dashboard/products" routerLinkActive="active" class="nav-item">
+        <span class="icon">📦</span>
+        <span *ngIf="isSidebarOpen">Products</span>
+      </a>
+      <a routerLink="/dashboard/shops" routerLinkActive="active" class="nav-item">
+        <span class="icon">🏪</span>
+        <span *ngIf="isSidebarOpen">Shops</span>
+      </a>
+      <a routerLink="/dashboard/purchases" routerLinkActive="active" class="nav-item">
+        <span class="icon">🛒</span>
+        <span *ngIf="isSidebarOpen">Purchases</span>
+      </a>
+      <a routerLink="/dashboard/categories" routerLinkActive="active" class="nav-item">
+        <span class="icon">📁</span>
+        <span *ngIf="isSidebarOpen">Categories</span>
+      </a>
+      <a *ngIf="isShopkeeper || isAdmin" routerLink="/dashboard/sales" routerLinkActive="active" class="nav-item">
+        <span class="icon">📊</span>
+        <span *ngIf="isSidebarOpen">Sales</span>
+      </a>
+    </nav>
+
+    <div class="user-bottom">
+      <button class="logout-btn" (click)="logout()">
+        <span class="icon">🚪</span>
+        <span *ngIf="isSidebarOpen">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay for mobile -->
+  <div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="toggleSidebar()"></div>
+
+  <!-- Main Content -->
+  <main class="main-wrapper">
+    <header class="topbar glass">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+      <div class="header-right">
+        <div class="user-profile" routerLink="/dashboard/profile" style="cursor: pointer;">
+          <div class="mini-avatar">
+            <img *ngIf="currentUser?.profilePicture" [src]="currentUser?.profilePicture" alt="P">
+            <span *ngIf="!currentUser?.profilePicture">{{ username.charAt(0).toUpperCase() }}</span>
+          </div>
+          <span class="username">{{ username }}</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="content-area">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

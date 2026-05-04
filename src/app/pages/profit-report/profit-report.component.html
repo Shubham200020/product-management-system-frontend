@@ -1,0 +1,64 @@
+<div class="page-header">
+  <div>
+    <h1>Profitability Report</h1>
+    <p>Tracking product margins and total earnings</p>
+  </div>
+  <button class="btn btn-secondary" onclick="history.back()">Back</button>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading" class="report-filters glass card animate-slide-down">
+  <div class="filter-group">
+    <label>Filter by Shop</label>
+    <select [(ngModel)]="selectedShop" (change)="applyFilters()">
+      <option value="">All Shops</option>
+      <option *ngFor="let shop of shops" [value]="shop.name">{{ shop.name }}</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Filter by Category</label>
+    <select [(ngModel)]="selectedCategory" (change)="applyFilters()">
+      <option value="">All Categories</option>
+      <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
+    </select>
+  </div>
+  <div class="filter-group search">
+    <label>Search Product</label>
+    <div class="search-input-wrapper">
+      <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search by name or SKU...">
+      <span class="search-icon">🔍</span>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="report-container glass card animate-slide-up">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>SKU</th>
+        <th>Shop</th>
+        <th>Category</th>
+        <th>Cost Price</th>
+        <th>Prod. Profit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let batch of filteredBatches">
+        <td><span class="name">{{ batch.productName }}</span></td>
+        <td><code>{{ batch.productSku }}</code></td>
+        <td>{{ batch.shopName }}</td>
+        <td><span class="badge">{{ batch.categoryName }}</span></td>
+        <td><span class="cost-text">{{ batch.costPrice | inr }}</span></td>
+        <td><span class="profit-text highlight">{{ batch.totalProfit | inr }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div *ngIf="filteredBatches.length === 0" class="empty-state">
+    <p>No profitability data available for the current filters.</p>
+  </div>
+</div>

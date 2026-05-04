@@ -1,0 +1,78 @@
+<div class="page-header">
+  <div>
+    <h1>User Management</h1>
+    <p>Manage all administrators and shopkeepers</p>
+  </div>
+  <button class="btn btn-primary" (click)="showAdminForm = !showAdminForm">
+    {{ showAdminForm ? 'Cancel' : 'Add New Admin' }}
+  </button>
+</div>
+
+<div *ngIf="showAdminForm" class="admin-form glass card animate-slide-down">
+  <h3>Create New Administrator</h3>
+  <div class="form-grid">
+    <div class="input-group">
+      <label>Full Name</label>
+      <input type="text" [(ngModel)]="newAdmin.name" placeholder="John Doe">
+    </div>
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" [(ngModel)]="newAdmin.email" placeholder="admin@example.com">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" [(ngModel)]="newAdmin.password" placeholder="••••••••">
+    </div>
+    <div class="input-group">
+      <label>Phone Number</label>
+      <input type="text" [(ngModel)]="newAdmin.phone" placeholder="9876543210">
+    </div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" (click)="createAdmin()">Save Administrator</button>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading" class="users-list glass card animate-slide-up">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Role</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>
+          <div class="user-info">
+            <span class="name">{{ user.name }}</span>
+            <span class="email">{{ user.email }}</span>
+          </div>
+        </td>
+        <td><span class="badge" [class.admin]="user.role === 'ADMIN'">{{ user.role }}</span></td>
+        <td>{{ user.phone }}</td>
+        <td>
+          <span class="status-indicator" 
+                [class.active]="user.active" 
+                [class.disabled]="user.email === currentUserEmail"
+                (click)="user.email !== currentUserEmail && toggleStatus(user)">
+            {{ user.active ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td>
+          <button class="delete-btn" 
+                  *ngIf="user.email !== currentUserEmail"
+                  (click)="deleteUser(user.id)">Delete Permanent</button>
+          <span *ngIf="user.email === currentUserEmail" class="badge">You (Protected)</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

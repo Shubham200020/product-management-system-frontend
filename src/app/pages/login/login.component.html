@@ -1,0 +1,62 @@
+<div class="login-container">
+  <div class="glass-card">
+    <div class="header">
+      <h1>Welcome Back</h1>
+      <p>Enter your credentials to access your dashboard</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="input-group">
+        <label for="identifier">Email or Phone</label>
+        <input 
+          type="text" 
+          id="identifier" 
+          name="email" 
+          [(ngModel)]="credentials.email" 
+          required 
+          #emailInput="ngModel"
+          placeholder="Enter email or phone"
+        >
+        <div class="field-error" *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">
+          <small *ngIf="emailInput.errors?.['required']">Email or phone is required.</small>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password" 
+            name="password" 
+            [(ngModel)]="credentials.password" 
+            required 
+            minlength="6"
+            #passwordInput="ngModel"
+            placeholder="••••••••"
+          >
+          <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
+            <span class="icon">{{ showPassword ? '👁️' : '👁️‍🗨️' }}</span>
+          </button>
+        </div>
+        <div class="field-error" *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)">
+          <small *ngIf="passwordInput.errors?.['required']">Password is required.</small>
+          <small *ngIf="passwordInput.errors?.['minlength']">Password must be at least 6 characters.</small>
+        </div>
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <button type="submit" class="btn btn-primary full-width" [disabled]="loading || !loginForm.valid">
+        <span *ngIf="!loading">Sign In</span>
+        <span *ngIf="loading" class="loader"></span>
+      </button>
+    </form>
+
+    <div class="footer">
+      <p>Don't have an account? <a routerLink="/register">Sign Up</a></p>
+    </div>
+  </div>
+</div>

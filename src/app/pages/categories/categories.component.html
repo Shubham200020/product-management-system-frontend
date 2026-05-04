@@ -1,0 +1,44 @@
+<div class="page-header">
+  <div>
+    <h1>Categories</h1>
+    <p>Manage product categories</p>
+  </div>
+  <button class="btn btn-primary" (click)="toggleForm()">
+    {{ showForm ? 'Cancel' : 'Add Category' }}
+  </button>
+</div>
+
+<div *ngIf="showForm" class="form-container glass card animate-slide-down">
+  <form (ngSubmit)="onSubmit()" #catForm="ngForm">
+    <div class="input-group">
+      <label>Category Name</label>
+      <input type="text" name="name" [(ngModel)]="currentCategory.name" required placeholder="Electronics, Groceries, etc.">
+    </div>
+    <div class="input-group">
+      <label>Shop</label>
+      <select name="shop" [(ngModel)]="currentCategory.shop" required>
+        <option [ngValue]="null">Select Shop</option>
+        <option *ngFor="let shop of shops" [ngValue]="shop">{{ shop.name }}</option>
+      </select>
+    </div>
+    <div class="form-actions" style="margin-top: 20px;">
+      <button type="submit" class="btn btn-primary" [disabled]="!catForm.valid">Save Category</button>
+      <button type="button" class="btn btn-secondary" (click)="toggleForm()">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading && !showForm" class="categories-grid card-grid">
+  <div *ngFor="let cat of categories" class="category-card glass card">
+    <div class="card-icon">📁</div>
+    <h3>{{ cat.name }}</h3>
+  </div>
+
+  <div *ngIf="categories.length === 0" class="empty-state">
+    <p>No categories found. Add one to get started.</p>
+  </div>
+</div>

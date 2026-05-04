@@ -1,0 +1,78 @@
+<div class="page-header">
+  <div>
+    <h1>Detailed Inventory Report</h1>
+    <p>Comprehensive tracking of all product batches and profitability</p>
+  </div>
+  <button class="btn btn-secondary" onclick="history.back()">Back</button>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading" class="report-filters glass card animate-slide-down">
+  <div class="filter-group">
+    <label>Filter by Shop</label>
+    <select [(ngModel)]="selectedShop" (change)="applyFilters()">
+      <option value="">All Shops</option>
+      <option *ngFor="let shop of shops" [value]="shop.name">{{ shop.name }}</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Filter by Category</label>
+    <select [(ngModel)]="selectedCategory" (change)="applyFilters()">
+      <option value="">All Categories</option>
+      <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
+    </select>
+  </div>
+  <div class="filter-group search">
+    <label>Search Product</label>
+    <div class="search-input-wrapper">
+      <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search by name or SKU...">
+      <span class="search-icon">🔍</span>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="report-container glass card animate-slide-up">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>SKU</th>
+        <th>Shop</th>
+        <th>Category</th>
+        <th>Buying Date</th>
+        <th>Expiry Date</th>
+        <th>Purchased</th>
+        <th>Remaining</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let batch of filteredBatches">
+        <td><span class="name">{{ batch.productName }}</span></td>
+        <td><code>{{ batch.productSku }}</code></td>
+        <td>{{ batch.shopName }}</td>
+        <td><span class="badge">{{ batch.categoryName }}</span></td>
+        <td>{{ batch.purchaseDate | date:'mediumDate' }}</td>
+        <td>
+          <span [class.text-danger]="batch.expiryDate && compareDates(batch.expiryDate, today)">
+            {{ batch.expiryDate ? (batch.expiryDate | date:'mediumDate') : 'No Expiry' }}
+          </span>
+        </td>
+        <td>{{ batch.initialQuantity }}</td>
+        <td><span class="remaining-count">{{ batch.remainingQuantity }}</span></td>
+        <td>
+          <span class="status-badge" [class.in-stock]="batch.remainingQuantity > 0" [class.out-of-stock]="batch.remainingQuantity <= 0">
+            {{ batch.remainingQuantity > 0 ? 'In Stock' : 'Out of Stock' }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div *ngIf="batches.length === 0" class="empty-state">
+    <p>No inventory batches found. Add purchases to see data here.</p>
+  </div>
+</div>

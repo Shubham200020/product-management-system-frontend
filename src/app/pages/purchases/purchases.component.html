@@ -1,0 +1,98 @@
+<div class="page-header">
+  <div>
+    <h1>Purchases</h1>
+    <p>Add and manage inventory stock</p>
+  </div>
+  <button class="btn btn-primary" (click)="toggleForm()">
+    {{ showForm ? 'Cancel' : 'Add Purchase' }}
+  </button>
+</div>
+
+<div *ngIf="showForm" class="form-container glass card animate-slide-down">
+  <form (ngSubmit)="onSubmit()" #purchaseForm="ngForm">
+    <div class="form-header-row">
+      <div class="input-group">
+        <label>Shop</label>
+        <select name="shopId" [(ngModel)]="currentPurchase.shopId" required>
+          <option [ngValue]="0">Select Shop</option>
+          <option *ngFor="let shop of shops" [ngValue]="shop.id">{{ shop.name }}</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Supplier</label>
+        <input type="text" name="supplier" [(ngModel)]="currentPurchase.supplier" required placeholder="Supplier Name">
+      </div>
+    </div>
+
+    <div class="items-section">
+      <div class="section-header">
+        <h3>Purchase Items</h3>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="addItem()">+ Add Item</button>
+      </div>
+
+      <div class="items-list">
+        <div *ngFor="let item of currentPurchase.items; let i = index" class="item-row glass">
+          <div class="input-group">
+            <label>Product</label>
+            <select [name]="'product-' + i" [(ngModel)]="item.productId" required>
+              <option [ngValue]="0">Select Product</option>
+              <option *ngFor="let p of products" [ngValue]="p.id">{{ p.name }} ({{ p.sku }})</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Quantity</label>
+            <input type="number" [name]="'qty-' + i" [(ngModel)]="item.quantity" required min="1">
+          </div>
+          <div class="input-group">
+            <label>Cost Price</label>
+            <input type="number" [name]="'cost-' + i" [(ngModel)]="item.costPrice" required min="0">
+          </div>
+          <div class="input-group">
+            <label>Expiry (Opt)</label>
+            <input type="date" [name]="'expiry-' + i" [(ngModel)]="item.expiryDate">
+          </div>
+          <button type="button" class="remove-btn" (click)="removeItem(i)">✕</button>
+        </div>
+        <div *ngIf="currentPurchase.items.length === 0" class="empty-items">
+          No items added yet. Click "+ Add Item" to start.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="!purchaseForm.valid || currentPurchase.items.length === 0 || submitting">
+        {{ submitting ? 'Saving...' : 'Save Purchase & Update Stock' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading && !showForm" class="history-section glass card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Shop</th>
+        <th>Supplier</th>
+        <th>Items</th>
+        <th>Total Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of purchases">
+        <td>{{ p.purchaseDate | date:'short' }}</td>
+        <td>{{ p.shop?.name }}</td>
+        <td>{{ p.supplier }}</td>
+        <td>{{ p.inventoryBatches?.length }} items</td>
+        <td class="amount">{{ p.totalCost | inr }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="purchases.length === 0" class="empty-state">
+    <p>No purchases found. Add one to update your stock.</p>
+  </div>
+</div>

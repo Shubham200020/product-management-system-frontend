@@ -1,0 +1,160 @@
+<div class="sales-container">
+  <div class="page-tabs">
+    <button [class.active]="activeTab === 'new'" (click)="switchTab('new')">New Sale</button>
+    <button [class.active]="activeTab === 'history'" (click)="switchTab('history')">Sales History</button>
+  </div>
+
+  <div *ngIf="activeTab === 'new'" class="animate-fade-in">
+    <div class="page-header">
+      <h1>New Sale</h1>
+      <p>Create a new sales transaction</p>
+    </div>
+
+    <div class="sales-grid">
+      <!-- Product Selection -->
+      <div class="product-selection glass card">
+        <h3>Select Products</h3>
+        <div class="search-box">
+          <input type="text" [(ngModel)]="searchTerm" (input)="applySearch()" placeholder="Search products by name or SKU...">
+        </div>
+        
+        <div *ngIf="loadingProducts" class="loader-container">
+          <div class="loader"></div>
+        </div>
+
+        <div *ngIf="!loadingProducts" class="product-list">
+          <div *ngFor="let product of filteredProducts" 
+               class="product-item" 
+               [class.out-of-stock]="(product.availableStock || 0) <= 0"
+               (click)="(product.availableStock || 0) > 0 && addToCart(product)">
+            <div class="info">
+              <span class="name">{{ product.name }}</span>
+              <span class="sku">{{ product.sku }}</span>
+              <span class="stock-badge" [class.low]="(product.availableStock || 0) < 10">
+                Stock: {{ product.availableStock || 0 }}
+              </span>
+            </div>
+            <button class="add-btn" [disabled]="(product.availableStock || 0) <= 0">+</button>
+          </div>
+          <div *ngIf="filteredProducts.length === 0" class="empty-state">
+            No products found.
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart and Checkout -->
+      <div class="checkout-panel glass card">
+        <h3>Cart</h3>
+        
+        <div class="checkout-header">
+          <div class="input-group">
+            <label>Shop</label>
+            <select [(ngModel)]="selectedShop">
+              <option [ngValue]="null">Select Shop</option>
+              <option *ngFor="let shop of shops" [ngValue]="shop">{{ shop.name }}</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Payment</label>
+            <select [(ngModel)]="paymentMode">
+              <option value="CASH">Cash</option>
+              <option value="CARD">Card</option>
+              <option value="UPI">UPI</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cart-items">
+          <div *ngFor="let item of cart; let i = index" class="cart-item animate-slide-in">
+            <button class="remove-btn" (click)="removeFromCart(i)" title="Remove Item">✕</button>
+            
+            <div class="item-header">
+              <span class="name">{{ item.product.name }}</span>
+              <span class="sku">{{ item.product.sku }}</span>
+            </div>
+
+            <div class="item-details">
+              <div class="input-section">
+                <div class="field">
+                  <label>Quantity</label>
+                  <input type="number" [(ngModel)]="item.quantity" min="1">
+                </div>
+                <div class="field">
+                  <label>Discount %</label>
+                  <input type="number" [(ngModel)]="item.discount" (ngModelChange)="calculatePrice(item)" min="0" max="100">
+                </div>
+              </div>
+
+              <div class="price-section">
+                <div class="price-box">
+                  <span class="price-label">MRP</span>
+                  <span class="price-value original">{{ item.mrp | inr }}</span>
+                </div>
+                <div class="price-box">
+                  <span class="price-label">Final Price</span>
+                  <span class="price-value final">{{ item.price | inr }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="cart.length === 0" class="empty-cart">
+            <span class="icon">🛒</span>
+            <p>Your cart is empty</p>
+          </div>
+        </div>
+
+        <div class="checkout-footer">
+          <div class="total">
+            <span>Total:</span>
+            <span class="amount">{{ getTotal() | inr }}</span>
+          </div>
+          <button class="btn btn-primary full-width" 
+                  [disabled]="cart.length === 0 || !selectedShop || submitting"
+                  (click)="submitSale()">
+            {{ submitting ? 'Processing...' : 'Complete Sale' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'history'" class="history-section animate-fade-in">
+    <div class="page-header">
+      <h1>Sales History</h1>
+      <p>View and track all past transactions</p>
+    </div>
+
+    <div *ngIf="loading" class="loader-container">
+      <div class="loader large"></div>
+    </div>
+
+    <div *ngIf="!loading" class="history-list glass card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Shop</th>
+            <th>Payment</th>
+            <th>Items</th>
+            <th>Total Amount</th>
+            <th>Profit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sale of salesHistory">
+            <td>{{ sale.createdAt | date:'short' }}</td>
+            <td>{{ sale.shop?.name }}</td>
+            <td><span class="badge">{{ sale.paymentMode }}</span></td>
+            <td>{{ sale.salesItems.length }} items</td>
+            <td class="amount font-bold">{{ sale.totalAmount | inr }}</td>
+            <td class="profit amount">{{ sale.totalProfit | inr }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="salesHistory.length === 0" class="empty-state">
+        <p>No sales records found.</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+.users-list {
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: rgba(15, 23, 42, 0.4);
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 24px;
+  text-align: left;
+}
+
+.data-table td {
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  vertical-align: middle;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-info .name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.user-info .email {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(99, 102, 241, 0.1);
+  color: #818cf8;
+}
+
+.badge.admin {
+  background: rgba(236, 72, 153, 0.1);
+  color: #f472b6;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-indicator.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+}
+
+.status-indicator.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.delete-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.05);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.admin-form {
+  padding: 40px;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}

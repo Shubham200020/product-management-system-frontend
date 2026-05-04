@@ -1,0 +1,55 @@
+<div class="page-header">
+  <div>
+    <h1>Shops</h1>
+    <p>Manage your shop locations</p>
+  </div>
+  <button class="btn btn-primary" (click)="toggleForm()">
+    {{ showForm ? 'Cancel' : 'Add Shop' }}
+  </button>
+</div>
+
+<div *ngIf="showForm" class="form-container glass card animate-slide-down">
+  <form (ngSubmit)="onSubmit()" #shopForm="ngForm">
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Shop Name</label>
+        <input type="text" name="name" [(ngModel)]="currentShop.name" required placeholder="Main Branch, Downtown, etc.">
+      </div>
+      <div class="input-group">
+        <label>City</label>
+        <input type="text" name="city" [(ngModel)]="currentShop.city" required placeholder="City">
+      </div>
+      <div class="input-group">
+        <label>Address</label>
+        <input type="text" name="address" [(ngModel)]="currentShop.address" required placeholder="Full Address">
+      </div>
+      <div class="input-group">
+        <label>GST Number</label>
+        <input type="text" name="gstNumber" [(ngModel)]="currentShop.gstNumber" placeholder="GSTIN (Optional)">
+      </div>
+    </div>
+    <div class="form-actions" style="margin-top: 20px;">
+      <button type="submit" class="btn btn-primary" [disabled]="!shopForm.valid">Save Shop</button>
+      <button type="button" class="btn btn-secondary" (click)="toggleForm()">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading && !showForm" class="shops-grid card-grid">
+  <div *ngFor="let shop of shops" class="shop-card glass card">
+    <div class="card-header">
+      <div class="card-icon">🏪</div>
+      <h3>{{ shop.name }}</h3>
+    </div>
+    <p class="location"><span class="icon">📍</span> {{ shop.city }}, {{ shop.address }}</p>
+    <p class="gst" *ngIf="shop.gstNumber"><span class="icon">📄</span> GST: {{ shop.gstNumber }}</p>
+  </div>
+
+  <div *ngIf="shops.length === 0" class="empty-state">
+    <p>No shops found. Add one to get started.</p>
+  </div>
+</div>

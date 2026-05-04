@@ -1,0 +1,45 @@
+<div class="page-header">
+  <div>
+    <h1>Product Catalog</h1>
+    <p>General list of all cataloged products</p>
+  </div>
+  <button class="btn btn-secondary" onclick="history.back()">Back</button>
+</div>
+
+<div class="search-bar glass card animate-slide-down">
+  <div class="search-input-wrapper">
+    <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search products by name or SKU...">
+    <span class="search-icon">🔍</span>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading" class="catalog-container glass card animate-slide-up">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Product Name</th>
+        <th>SKU</th>
+        <th>Category</th>
+        <th>Shop</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of filteredProducts">
+        <td><code>#{{ p.id }}</code></td>
+        <td><span class="name">{{ p.name }}</span></td>
+        <td><code>{{ p.sku }}</code></td>
+        <td><span class="badge">{{ p.category?.name || 'N/A' }}</span></td>
+        <td>{{ p.shop?.name || 'N/A' }}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div *ngIf="filteredProducts.length === 0" class="empty-state">
+    <p>No products found matching your search.</p>
+  </div>
+</div>
