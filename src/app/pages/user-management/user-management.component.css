@@ -121,3 +121,20 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 32px;
 }
+
+.timestamp {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timestamp .date {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.timestamp .time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}

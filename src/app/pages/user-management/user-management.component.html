@@ -43,6 +43,8 @@
       <tr>
         <th>User</th>
         <th>Role</th>
+        <th>Joined On</th>
+        <th>Last Updated</th>
         <th>Phone</th>
         <th>Status</th>
         <th>Actions</th>
@@ -57,6 +59,18 @@
           </div>
         </td>
         <td><span class="badge" [class.admin]="user.role === 'ADMIN'">{{ user.role }}</span></td>
+        <td>
+          <div class="timestamp">
+            <span class="date">{{ user.createdAt | date:'MMM d, y' }}</span>
+            <span class="time">{{ user.createdAt | date:'h:mm a' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="timestamp">
+            <span class="date">{{ user.updatedAt | date:'MMM d, y' }}</span>
+            <span class="time">{{ user.updatedAt | date:'h:mm a' }}</span>
+          </div>
+        </td>
         <td>{{ user.phone }}</td>
         <td>
           <span class="status-indicator" 

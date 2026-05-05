@@ -80,35 +80,41 @@
     </div>
   </div>
 
-  <!-- Recent Activity -->
-  <div class="recent-activity">
-    <h2>System Status</h2>
+  <!-- System Status -->
+  <div class="recent-activity" *ngIf="systemStatus$ | async as status">
+    <h2>System Status (Real-time)</h2>
     <div class="activity-list">
       <div class="activity-item">
-        <div class="activity-indicator" style="background: var(--success);"></div>
+        <div class="activity-indicator" [style.background]="status.apiStatus === 'OPTIMAL' ? 'var(--success)' : '#ef4444'"></div>
         <div class="activity-content">
-          <p class="activity-title">System Status</p>
-          <p class="activity-time">All systems operational</p>
+          <p class="activity-title">API Server</p>
+          <p class="activity-time">{{ status.apiStatus === 'OPTIMAL' ? 'Running at optimal performance' : 'Service Disrupted' }}</p>
         </div>
-        <div class="activity-badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">Active</div>
+        <div class="activity-badge" [style.background]="status.apiStatus === 'OPTIMAL' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'" [style.color]="status.apiStatus === 'OPTIMAL' ? 'var(--success)' : '#ef4444'">
+          {{ status.apiStatus }}
+        </div>
       </div>
 
       <div class="activity-item">
-        <div class="activity-indicator" style="background: #f59e0b;"></div>
+        <div class="activity-indicator" [style.background]="status.databaseConnected ? '#f59e0b' : '#ef4444'"></div>
         <div class="activity-content">
           <p class="activity-title">Database Connection</p>
-          <p class="activity-time">Connected and running smoothly</p>
+          <p class="activity-time">{{ status.databaseConnected ? 'Connected and running smoothly' : 'Database Connection Failed' }}</p>
         </div>
-        <div class="activity-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Connected</div>
+        <div class="activity-badge" [style.background]="status.databaseConnected ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)'" [style.color]="status.databaseConnected ? '#f59e0b' : '#ef4444'">
+          {{ status.databaseConnected ? 'Connected' : 'Error' }}
+        </div>
       </div>
 
       <div class="activity-item">
         <div class="activity-indicator" style="background: var(--accent);"></div>
         <div class="activity-content">
-          <p class="activity-title">API Server</p>
-          <p class="activity-time">Running at optimal performance</p>
+          <p class="activity-title">Server Memory</p>
+          <p class="activity-time">Used: {{ status.memoryUsedMB }}MB / Total: {{ status.memoryMaxMB }}MB</p>
         </div>
-        <div class="activity-badge" style="background: rgba(34, 211, 238, 0.2); color: var(--accent);">Optimal</div>
+        <div class="activity-badge" style="background: rgba(34, 211, 238, 0.2); color: var(--accent);">
+          {{ (status.memoryUsedMB / status.memoryMaxMB * 100).toFixed(1) }}%
+        </div>
       </div>
     </div>
   </div>

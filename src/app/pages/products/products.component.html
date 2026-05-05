@@ -83,13 +83,18 @@
           <td><span class="badge">{{ product.type }}</span></td>
           <td><span class="mrp-text">{{ product.mrp | inr }}</span></td>
           <td>
-            <span class="stock-count" [class.low]="(product.availableStock || 0) < 10">
-              {{ product.availableStock || 0 }}
-            </span>
+            <div class="stock-info">
+              <span class="stock-count" [attr.data-status]="product.stockStatus">
+                {{ product.availableStock || 0 }}
+              </span>
+              <div class="stock-progress-mini">
+                <div class="progress-bar" [style.width.%]="product.stockPercentage || 0" [attr.data-status]="product.stockStatus"></div>
+              </div>
+            </div>
           </td>
           <td>
-            <span class="status-indicator" [class.active]="product.isActive">
-              {{ product.isActive ? 'Active' : 'Inactive' }}
+            <span class="status-badge" [attr.data-status]="product.stockStatus">
+              {{ product.stockStatus?.replace('_', ' ') || 'UNKNOWN' }}
             </span>
           </td>
           <td>

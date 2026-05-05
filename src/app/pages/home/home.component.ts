@@ -12,7 +12,8 @@ interface StatCard {
 
 import { ProductService } from '../../services/product.service';
 import { SalesService } from '../../services/sales.service';
-import { forkJoin } from 'rxjs';
+import { StatusService, SystemStatus } from '../../services/status.service';
+import { forkJoin, Observable } from 'rxjs';
 
 import { RouterModule } from '@angular/router';
 
@@ -75,14 +76,17 @@ export class HomeComponent implements OnInit {
     }
   ];
   loading = true;
+  systemStatus$!: Observable<SystemStatus>;
 
   constructor(
     private productService: ProductService,
-    private salesService: SalesService
+    private salesService: SalesService,
+    private statusService: StatusService
   ) {}
 
   ngOnInit() {
     this.loadStats();
+    this.systemStatus$ = this.statusService.getStatus();
   }
 
   loadStats() {
@@ -93,8 +97,8 @@ export class HomeComponent implements OnInit {
       next: (products) => {
         const safeProducts = products || [];
         const totalStock = safeProducts.reduce((sum, p) => sum + (p.availableStock || 0), 0);
-        const lowStockCount = safeProducts.filter(p => (p.availableStock || 0) < 10 && (p.availableStock || 0) > 0).length;
-        const outOfStockCount = safeProducts.filter(p => (p.availableStock || 0) <= 0).length;
+        const lowStockCount = safeProducts.filter(p => p.stockStatus === 'LOW_STOCK').length;
+        const outOfStockCount = safeProducts.filter(p => p.stockStatus === 'OUT_OF_STOCK').length;
 
         this.stats[0].value = safeProducts.length.toString();
         this.stats[0].change = 'Distinct products cataloged';

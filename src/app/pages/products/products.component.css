@@ -174,8 +174,68 @@
 }
 
 .stock-info {
-  font-size: 0.875rem;
-  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.stock-count {
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 4px 0;
+}
+
+.stock-count[data-status="IN_STOCK"] { color: #10b981; }
+.stock-count[data-status="LOW_STOCK"] { color: #f59e0b; }
+.stock-count[data-status="OUT_OF_STOCK"] { color: #ef4444; }
+
+.stock-progress-mini {
+  height: 4px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-bar[data-status="IN_STOCK"] { background: #10b981; }
+.progress-bar[data-status="LOW_STOCK"] { background: #f59e0b; }
+.progress-bar[data-status="OUT_OF_STOCK"] { background: #ef4444; }
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-badge[data-status="IN_STOCK"] {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-badge[data-status="LOW_STOCK"] {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-badge[data-status="OUT_OF_STOCK"] {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .empty-state {
@@ -200,20 +260,4 @@
   .form-grid {
     grid-template-columns: 1fr;
   }
-}
-
-.stock-count {
-  font-weight: 700;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 4px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  display: inline-block;
-}
-
-.stock-count.low {
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.2);
 }

@@ -13,11 +13,13 @@ import { ProductCatalogComponent } from './pages/product-catalog/product-catalog
 import { ProfitReportComponent } from './pages/profit-report/profit-report.component';
 import { UserManagementComponent } from './pages/user-management/user-management.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
   { 
     path: 'dashboard', 
     component: DashboardComponent,

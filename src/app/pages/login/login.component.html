@@ -7,18 +7,18 @@
 
     <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <div class="input-group">
-        <label for="identifier">Email or Phone</label>
+        <label for="identifier">Email or Phone Number</label>
         <input 
           type="text" 
           id="identifier" 
-          name="email" 
-          [(ngModel)]="credentials.email" 
+          name="identifier" 
+          [(ngModel)]="credentials.identifier" 
           required 
-          #emailInput="ngModel"
-          placeholder="Enter email or phone"
+          #idInput="ngModel"
+          placeholder="example@email.com or 10-digit phone"
         >
-        <div class="field-error" *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">
-          <small *ngIf="emailInput.errors?.['required']">Email or phone is required.</small>
+        <div class="field-error" *ngIf="idInput.invalid && (idInput.dirty || idInput.touched)">
+          <small *ngIf="idInput.errors?.['required']">Email or phone is required.</small>
         </div>
       </div>
 
@@ -42,6 +42,9 @@
         <div class="field-error" *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)">
           <small *ngIf="passwordInput.errors?.['required']">Password is required.</small>
           <small *ngIf="passwordInput.errors?.['minlength']">Password must be at least 6 characters.</small>
+        </div>
+        <div class="forgot-link-wrapper">
+          <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
         </div>
       </div>
 

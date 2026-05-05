@@ -13,42 +13,89 @@
         </div>
         <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
       </div>
-      <h2>Edit Profile</h2>
-      <p>Update your personal information</p>
+      <h2>Settings</h2>
+      <p>Manage your account settings and preferences</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="profile-tabs">
+      <button class="tab-btn" [class.active]="activeSection === 'general'" (click)="activeSection = 'general'">
+        General
+      </button>
+      <button class="tab-btn" [class.active]="activeSection === 'security'" (click)="activeSection = 'security'">
+        Security
+      </button>
     </div>
 
     <div *ngIf="loading" class="loader-container">
       <div class="loader"></div>
     </div>
 
-    <form *ngIf="!loading" (ngSubmit)="onSubmit()" #profileForm="ngForm">
-      <div class="form-grid">
-        <div class="input-group">
-          <label>Full Name</label>
-          <input type="text" name="name" [(ngModel)]="user.name" required placeholder="Your Name">
-        </div>
+    <form *ngIf="!loading" (ngSubmit)="onSubmit()" #profileForm="ngForm" class="profile-form">
+      
+      <!-- General Section -->
+      <div *ngIf="activeSection === 'general'" class="section-content animate-slide-in">
+        <div class="form-grid">
+          <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" name="name" [(ngModel)]="user.name" required placeholder="Your Name">
+          </div>
 
-        <div class="input-group">
-          <label>Email</label>
-          <input type="email" name="email" [(ngModel)]="user.email" (ngModelChange)="onEmailChange($event)" required placeholder="Your Email">
-          <div class="field-status">
-            <span *ngIf="checkingEmail" class="status-checking">Checking availability...</span>
-            <span *ngIf="!checkingEmail && !emailAvailable && user.email !== originalEmail" class="status-error">Email already taken</span>
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" name="email" [(ngModel)]="user.email" (ngModelChange)="onEmailChange($event)" required placeholder="Your Email">
+            <div class="field-status">
+              <span *ngIf="checkingEmail" class="status-checking">Checking availability...</span>
+              <span *ngIf="!checkingEmail && !emailAvailable && user.email !== originalEmail" class="status-error">Email taken</span>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Phone Number</label>
+            <input type="text" name="phone" [(ngModel)]="user.phone" (ngModelChange)="onPhoneChange($event)" required pattern="[0-9]{10}" placeholder="10 digit phone">
+            <div class="field-status">
+              <span *ngIf="checkingPhone" class="status-checking">Checking availability...</span>
+              <span *ngIf="!checkingPhone && !phoneAvailable && user.phone !== originalPhone" class="status-error">Phone taken</span>
+            </div>
+          </div>
+
+          <div class="input-group disabled">
+            <label>Role</label>
+            <input type="text" name="role" [ngModel]="user.role" disabled class="disabled-input">
           </div>
         </div>
+      </div>
 
-        <div class="input-group">
-          <label>Phone Number</label>
-          <input type="text" name="phone" [(ngModel)]="user.phone" (ngModelChange)="onPhoneChange($event)" required pattern="[0-9]{10}" placeholder="10 digit phone">
-          <div class="field-status">
-            <span *ngIf="checkingPhone" class="status-checking">Checking availability...</span>
-            <span *ngIf="!checkingPhone && !phoneAvailable && user.phone !== originalPhone" class="status-error">Phone number already taken</span>
-          </div>
+      <!-- Security Section -->
+      <div *ngIf="activeSection === 'security'" class="section-content animate-slide-in">
+        <div class="security-info">
+          <h3>Change Password</h3>
+          <p>Ensure your account is using a long, random password to stay secure.</p>
         </div>
+        
+        <div class="form-grid">
+          <div class="input-group password-group">
+            <label>New Password</label>
+            <div class="input-with-icon">
+              <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="user.password" placeholder="Enter new password">
+              <button type="button" class="visibility-toggle" (click)="showPassword = !showPassword">
+                <span class="eye-icon">{{ showPassword ? '👁️' : '🔒' }}</span>
+              </button>
+            </div>
+          </div>
 
-        <div class="input-group disabled">
-          <label>Role</label>
-          <input type="text" name="role" [ngModel]="user.role" disabled class="disabled-input">
+          <div class="input-group password-group">
+            <label>Confirm Password</label>
+            <div class="input-with-icon">
+              <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Repeat new password">
+              <button type="button" class="visibility-toggle" (click)="showConfirmPassword = !showConfirmPassword">
+                <span class="eye-icon">{{ showConfirmPassword ? '👁️' : '🔒' }}</span>
+              </button>
+            </div>
+            <div class="field-status" *ngIf="user.password && confirmPassword && user.password !== confirmPassword">
+              <span class="status-error">Passwords do not match</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -58,8 +105,8 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="saving || !profileForm.valid">
-          {{ saving ? 'Saving...' : 'Save Changes' }}
+        <button type="submit" class="btn btn-primary" [disabled]="saving || !profileForm.valid || (activeSection === 'security' && user.password !== confirmPassword)">
+          {{ saving ? 'Saving Changes...' : 'Save All Changes' }}
         </button>
       </div>
     </form>

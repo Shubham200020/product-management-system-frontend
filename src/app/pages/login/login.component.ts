@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  credentials = { email: '', password: '' };
+  credentials = { identifier: '', password: '' };
   error = '';
   loading = false;
   showPassword = false;

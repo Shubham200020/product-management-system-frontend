@@ -12,6 +12,9 @@ export interface Product {
   category?: any;
   shop?: any;
   availableStock?: number;
+  totalInitialStock?: number;
+  stockPercentage?: number;
+  stockStatus?: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
   mrp: number;
 }
 

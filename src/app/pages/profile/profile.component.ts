@@ -28,6 +28,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   checkingEmail = false;
   checkingPhone = false;
 
+  // New fields for enhanced UX
+  confirmPassword = '';
+  showPassword = false;
+  showConfirmPassword = false;
+  activeSection: 'general' | 'security' | 'appearance' = 'general';
+
   private emailSubject = new Subject<string>();
   private phoneSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -131,13 +137,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.user.password && this.user.password !== this.confirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
+      return;
+    }
+
     this.saving = true;
     this.successMessage = '';
     this.errorMessage = '';
 
     this.userService.updateMyProfile(this.user).subscribe({
       next: (updatedUser) => {
-        this.user = updatedUser;
+        this.user = { ...updatedUser, password: '' }; // Clear password field
+        this.confirmPassword = ''; // Clear confirm password
         this.originalEmail = updatedUser.email;
         this.originalPhone = updatedUser.phone;
         this.successMessage = 'Profile updated successfully!';
