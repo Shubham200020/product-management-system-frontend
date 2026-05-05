@@ -15,7 +15,7 @@ import { SalesService } from '../../services/sales.service';
 import { StatusService, SystemStatus } from '../../services/status.service';
 import { forkJoin, Observable } from 'rxjs';
 
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -73,6 +73,14 @@ export class HomeComponent implements OnInit {
       icon: '🚫',
       gradient: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
       bgGradient: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.05) 100%)'
+    },
+    {
+      title: 'Expired Products',
+      value: '...',
+      change: 'Loading...',
+      icon: '⏰',
+      gradient: 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
+      bgGradient: 'linear-gradient(135deg, rgba(100, 116, 139, 0.15) 0%, rgba(51, 65, 85, 0.05) 100%)'
     }
   ];
   loading = true;
@@ -81,8 +89,21 @@ export class HomeComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private salesService: SalesService,
-    private statusService: StatusService
+    private statusService: StatusService,
+    private router: Router
   ) {}
+
+  navigateToStat(index: number) {
+    switch(index) {
+      case 0: this.router.navigate(['/dashboard/product-catalog']); break;
+      case 1: this.router.navigate(['/dashboard/inventory-report']); break;
+      case 2: this.router.navigate(['/dashboard/sales']); break;
+      case 3: this.router.navigate(['/dashboard/profit-report']); break;
+      case 4: this.router.navigate(['/dashboard/inventory-report'], { queryParams: { status: 'LOW_STOCK' } }); break;
+      case 5: this.router.navigate(['/dashboard/inventory-report'], { queryParams: { status: 'OUT_OF_STOCK' } }); break;
+      case 6: this.router.navigate(['/dashboard/inventory-report'], { queryParams: { status: 'EXPIRED' } }); break;
+    }
+  }
 
   ngOnInit() {
     this.loadStats();
@@ -99,6 +120,7 @@ export class HomeComponent implements OnInit {
         const totalStock = safeProducts.reduce((sum, p) => sum + (p.availableStock || 0), 0);
         const lowStockCount = safeProducts.filter(p => p.stockStatus === 'LOW_STOCK').length;
         const outOfStockCount = safeProducts.filter(p => p.stockStatus === 'OUT_OF_STOCK').length;
+        const expiredCount = safeProducts.filter(p => p.stockStatus === 'EXPIRED').length;
 
         this.stats[0].value = safeProducts.length.toString();
         this.stats[0].change = 'Distinct products cataloged';
@@ -111,6 +133,9 @@ export class HomeComponent implements OnInit {
 
         this.stats[5].value = outOfStockCount.toString();
         this.stats[5].change = 'Zero inventory products';
+
+        this.stats[6].value = expiredCount.toString();
+        this.stats[6].change = 'Products past expiry date';
         
         this.checkLoadingComplete();
       },

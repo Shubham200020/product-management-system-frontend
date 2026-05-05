@@ -25,6 +25,23 @@
       <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
     </select>
   </div>
+  <div class="filter-group">
+    <label>Filter by Status</label>
+    <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
+      <option value="">All Statuses</option>
+      <option value="IN_STOCK">In Stock</option>
+      <option value="LOW_STOCK">Low Stock Alert</option>
+      <option value="OUT_OF_STOCK">Out of Stock</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>From Date</label>
+    <input type="date" [(ngModel)]="startDate" (change)="loadData()" class="date-input">
+  </div>
+  <div class="filter-group">
+    <label>To Date</label>
+    <input type="date" [(ngModel)]="endDate" (change)="loadData()" class="date-input">
+  </div>
   <div class="filter-group search">
     <label>Search Product</label>
     <div class="search-input-wrapper">
@@ -34,38 +51,64 @@
   </div>
 </div>
 
+<!-- Summary Cards -->
+<div *ngIf="!loading" class="summary-cards animate-slide-up">
+  <div class="summary-card investment">
+    <div class="card-label">Total Investment</div>
+    <div class="card-value">{{ totalInvestment | inr }}</div>
+  </div>
+  <div class="summary-card loss">
+    <div class="card-label">Total Potential Loss</div>
+    <div class="card-value">{{ totalPotentialLoss | inr }}</div>
+  </div>
+  <div class="summary-card gross">
+    <div class="card-label">Total Gross Profit</div>
+    <div class="card-value">{{ totalGrossProfit | inr }}</div>
+  </div>
+  <div class="summary-card net" [class.negative]="totalNetProfit < 0">
+    <div class="card-label">Total Net Profit</div>
+    <div class="card-value">{{ totalNetProfit | inr }}</div>
+  </div>
+</div>
+
 <div *ngIf="!loading" class="report-container glass card animate-slide-up">
   <table class="data-table">
     <thead>
       <tr>
         <th>Product</th>
-        <th>SKU</th>
         <th>Shop</th>
         <th>Category</th>
         <th>Buying Date</th>
-        <th>Expiry Date</th>
+        <th *ngIf="selectedStatus !== 'OUT_OF_STOCK'">Expiry Date</th>
         <th>Purchased</th>
         <th>Remaining</th>
+        <th>Gross Profit</th>
+        <th>Net Profit</th>
+        <th>Investment</th>
+        <th>Loss/Waste</th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let batch of filteredBatches">
         <td><span class="name">{{ batch.productName }}</span></td>
-        <td><code>{{ batch.productSku }}</code></td>
         <td>{{ batch.shopName }}</td>
         <td><span class="badge">{{ batch.categoryName }}</span></td>
         <td>{{ batch.purchaseDate | date:'mediumDate' }}</td>
-        <td>
+        <td *ngIf="selectedStatus !== 'OUT_OF_STOCK'">
           <span [class.text-danger]="batch.expiryDate && compareDates(batch.expiryDate, today)">
             {{ batch.expiryDate ? (batch.expiryDate | date:'mediumDate') : 'No Expiry' }}
           </span>
         </td>
         <td>{{ batch.initialQuantity }}</td>
-        <td><span class="remaining-count">{{ batch.remainingQuantity }}</span></td>
+        <td><span class="remaining-count" [attr.data-status]="batch.stockStatus">{{ batch.remainingQuantity }}</span></td>
+        <td class="profit-text gross">{{ batch.grossProfit | inr }}</td>
+        <td class="profit-text net" [class.text-danger]="batch.netProfit < 0">{{ batch.netProfit | inr }}</td>
+        <td>{{ batch.investment | inr }}</td>
+        <td><span [class.text-danger]="batch.potentialLoss > 0">{{ batch.potentialLoss | inr }}</span></td>
         <td>
-          <span class="status-badge" [class.in-stock]="batch.remainingQuantity > 0" [class.out-of-stock]="batch.remainingQuantity <= 0">
-            {{ batch.remainingQuantity > 0 ? 'In Stock' : 'Out of Stock' }}
+          <span class="status-badge" [attr.data-status]="batch.stockStatus">
+            {{ batch.stockStatus?.replace('_', ' ') || 'UNKNOWN' }}
           </span>
         </td>
       </tr>

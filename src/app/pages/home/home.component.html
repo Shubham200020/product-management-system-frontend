@@ -17,10 +17,7 @@
     <div *ngFor="let stat of stats; let i = index" 
          class="stat-card glass animate-slide-up"
          [style.animation-delay]="(i * 0.1) + 's'"
-         [routerLink]="i === 0 ? '/dashboard/product-catalog' : 
-                      i === 1 || i === 4 ? '/dashboard/inventory-report' : 
-                      i === 3 ? '/dashboard/profit-report' :
-                      i === 2 ? '/dashboard/sales' : null"
+         (click)="navigateToStat(i)"
          style="cursor: pointer">
       <div class="card-content">
         <div class="stat-icon">{{ stat.icon }}</div>

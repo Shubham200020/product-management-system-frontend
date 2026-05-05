@@ -22,8 +22,15 @@ export class ProfitReportComponent implements OnInit {
   selectedCategory: string = '';
   selectedShop: string = '';
   searchTerm: string = '';
+  startDate: string = '';
+  endDate: string = '';
   
   loading = true;
+
+  totalGrossProfit = 0;
+  totalNetProfit = 0;
+  totalInvestment = 0;
+  totalPotentialLoss = 0;
 
   constructor(
     private productService: ProductService,
@@ -37,7 +44,7 @@ export class ProfitReportComponent implements OnInit {
 
   loadData() {
     this.loading = true;
-    this.productService.getInventoryReport().subscribe({
+    this.productService.getInventoryReport(this.startDate, this.endDate).subscribe({
       next: (data) => {
         this.batches = data;
         this.applyFilters();
@@ -61,5 +68,14 @@ export class ProfitReportComponent implements OnInit {
       const matchSearch = !search || b.productName.toLowerCase().includes(search) || b.productSku.toLowerCase().includes(search);
       return matchCategory && matchShop && matchSearch;
     });
+
+    this.calculateTotals();
+  }
+
+  calculateTotals() {
+    this.totalGrossProfit = this.filteredBatches.reduce((sum, b) => sum + (b.grossProfit || 0), 0);
+    this.totalNetProfit = this.filteredBatches.reduce((sum, b) => sum + (b.netProfit || 0), 0);
+    this.totalInvestment = this.filteredBatches.reduce((sum, b) => sum + (b.investment || 0), 0);
+    this.totalPotentialLoss = this.filteredBatches.reduce((sum, b) => sum + (b.potentialLoss || 0), 0);
   }
 }

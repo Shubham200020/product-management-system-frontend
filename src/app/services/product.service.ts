@@ -14,7 +14,9 @@ export interface Product {
   availableStock?: number;
   totalInitialStock?: number;
   stockPercentage?: number;
-  stockStatus?: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
+  stockStatus?: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'EXPIRED';
+  investment?: number;
+  potentialLoss?: number;
   mrp: number;
 }
 
@@ -30,8 +32,11 @@ export class ProductService {
     return this.http.get<Product[]>(this.apiUrl, { withCredentials: true });
   }
 
-  getInventoryReport(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/report`, { withCredentials: true });
+  getInventoryReport(startDate?: string, endDate?: string): Observable<any[]> {
+    let params: any = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    return this.http.get<any[]>(`${this.apiUrl}/report`, { params, withCredentials: true });
   }
 
   createProduct(product: Product): Observable<Product> {

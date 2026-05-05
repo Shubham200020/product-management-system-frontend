@@ -641,10 +641,61 @@
 }
 
 .profit {
-  color: #4ade80 !important;
+  color: #10b981 !important;
   font-weight: 700;
-  background: none !important;
-  -webkit-text-fill-color: #4ade80 !important;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-row:hover {
+  background: rgba(99, 102, 241, 0.05) !important;
+}
+
+.clickable-row.expanded {
+  background: rgba(99, 102, 241, 0.1) !important;
+  border-left: 4px solid #6366f1;
+}
+
+.expand-icon {
+  margin-left: 8px;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.details-row td {
+  padding: 0 !important;
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.details-content {
+  padding: 24px;
+  border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+}
+
+.inner-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inner-table th {
+  background: transparent !important;
+  font-size: 0.75rem !important;
+  padding: 8px 16px !important;
+  color: #64748b !important;
+}
+
+.inner-table td {
+  padding: 12px 16px !important;
+  font-size: 0.9rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.profit-text {
+  color: #10b981;
+  font-weight: 600;
 }
 
 .font-bold {

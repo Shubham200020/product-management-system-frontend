@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ProductService, Product } from '../../services/product.service';
 import { CategoryService, Category } from '../../services/category.service';
@@ -22,19 +23,33 @@ export class InventoryReportComponent implements OnInit {
   
   selectedCategory: string = '';
   selectedShop: string = '';
+  selectedStatus: string = '';
   searchTerm: string = '';
+  startDate: string = '';
+  endDate: string = '';
   
   loading = true;
   today = new Date();
 
+  totalGrossProfit = 0;
+  totalNetProfit = 0;
+  totalInvestment = 0;
+  totalPotentialLoss = 0;
+
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
-    private shopService: ShopService
+    private shopService: ShopService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.loadData();
+    this.route.queryParams.subscribe(params => {
+      if (params['status']) {
+        this.selectedStatus = params['status'];
+      }
+      this.loadData();
+    });
   }
 
   compareDates(d1: any, d2: Date): boolean {
@@ -46,7 +61,7 @@ export class InventoryReportComponent implements OnInit {
   loadData() {
     this.loading = true;
     forkJoin({
-      report: this.productService.getInventoryReport(),
+      report: this.productService.getInventoryReport(this.startDate, this.endDate),
       categories: this.categoryService.getCategories(),
       shops: this.shopService.getShops()
     }).subscribe({
@@ -69,9 +84,19 @@ export class InventoryReportComponent implements OnInit {
     this.filteredBatches = this.batches.filter(b => {
       const matchCategory = !this.selectedCategory || b.categoryName === this.selectedCategory;
       const matchShop = !this.selectedShop || b.shopName === this.selectedShop;
+      const matchStatus = !this.selectedStatus || b.stockStatus === this.selectedStatus;
       const matchSearch = !search || b.productName.toLowerCase().includes(search) || b.productSku.toLowerCase().includes(search);
-      return matchCategory && matchShop && matchSearch;
+      return matchCategory && matchShop && matchStatus && matchSearch;
     });
+
+    this.calculateTotals();
+  }
+
+  calculateTotals() {
+    this.totalGrossProfit = this.filteredBatches.reduce((sum, b) => sum + (b.grossProfit || 0), 0);
+    this.totalNetProfit = this.filteredBatches.reduce((sum, b) => sum + (b.netProfit || 0), 0);
+    this.totalInvestment = this.filteredBatches.reduce((sum, b) => sum + (b.investment || 0), 0);
+    this.totalPotentialLoss = this.filteredBatches.reduce((sum, b) => sum + (b.potentialLoss || 0), 0);
   }
 
   calculateProductProfit(product: any): number {

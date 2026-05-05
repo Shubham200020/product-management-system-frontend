@@ -140,14 +140,44 @@
             <th>Profit</th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let sale of salesHistory">
+        <tbody *ngFor="let sale of salesHistory">
+          <tr (click)="toggleDetails(sale.id)" class="clickable-row" [class.expanded]="expandedSaleId === sale.id">
             <td>{{ sale.createdAt | date:'short' }}</td>
             <td>{{ sale.shop?.name }}</td>
             <td><span class="badge">{{ sale.paymentMode }}</span></td>
-            <td>{{ sale.salesItems.length }} items</td>
+            <td>
+              {{ getTotalQuantity(sale) }} {{ getTotalQuantity(sale) === 1 ? 'item' : 'items' }}
+              <span class="expand-icon">{{ expandedSaleId === sale.id ? '▴' : '▾' }}</span>
+            </td>
             <td class="amount font-bold">{{ sale.totalAmount | inr }}</td>
             <td class="profit amount">{{ sale.totalProfit | inr }}</td>
+          </tr>
+          <!-- Details Row -->
+          <tr *ngIf="expandedSaleId === sale.id" class="details-row animate-fade-in">
+            <td colspan="6">
+              <div class="details-content">
+                <table class="inner-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Unit Price</th>
+                      <th>Cost Price</th>
+                      <th>Profit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of sale.salesItems">
+                      <td>{{ item.product?.name }}</td>
+                      <td>{{ item.quantity }}</td>
+                      <td>{{ item.sellingPrice | inr }}</td>
+                      <td>{{ item.costPrice | inr }}</td>
+                      <td class="profit-text">{{ item.profit | inr }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

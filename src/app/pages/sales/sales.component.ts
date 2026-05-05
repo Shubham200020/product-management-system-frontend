@@ -28,6 +28,7 @@ export class SalesComponent implements OnInit {
   loading = true;
   loadingProducts = true;
   submitting = false;
+  expandedSaleId: number | null = null;
 
   constructor(
     private salesService: SalesService,
@@ -146,5 +147,15 @@ export class SalesComponent implements OnInit {
         this.submitting = false;
       }
     });
+  }
+
+  getTotalQuantity(sale: SalesInvoice): number {
+    if (!sale.salesItems) return 0;
+    return sale.salesItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  }
+
+  toggleDetails(saleId: number | undefined) {
+    if (!saleId) return;
+    this.expandedSaleId = this.expandedSaleId === saleId ? null : saleId;
   }
 }

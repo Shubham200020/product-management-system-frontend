@@ -25,6 +25,14 @@
       <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
     </select>
   </div>
+  <div class="filter-group">
+    <label>From Date</label>
+    <input type="date" [(ngModel)]="startDate" (change)="loadData()" class="date-input">
+  </div>
+  <div class="filter-group">
+    <label>To Date</label>
+    <input type="date" [(ngModel)]="endDate" (change)="loadData()" class="date-input">
+  </div>
   <div class="filter-group search">
     <label>Search Product</label>
     <div class="search-input-wrapper">
@@ -34,26 +42,46 @@
   </div>
 </div>
 
+<!-- Summary Cards -->
+<div *ngIf="!loading" class="summary-cards animate-slide-up">
+  <div class="summary-card investment">
+    <div class="card-label">Total Investment</div>
+    <div class="card-value">{{ totalInvestment | inr }}</div>
+  </div>
+  <div class="summary-card loss">
+    <div class="card-label">Total Potential Loss</div>
+    <div class="card-value">{{ totalPotentialLoss | inr }}</div>
+  </div>
+  <div class="summary-card gross">
+    <div class="card-label">Total Gross Profit</div>
+    <div class="card-value">{{ totalGrossProfit | inr }}</div>
+  </div>
+  <div class="summary-card net" [class.negative]="totalNetProfit < 0">
+    <div class="card-label">Total Net Profit</div>
+    <div class="card-value">{{ totalNetProfit | inr }}</div>
+  </div>
+</div>
+
 <div *ngIf="!loading" class="report-container glass card animate-slide-up">
   <table class="data-table">
     <thead>
       <tr>
         <th>Product</th>
-        <th>SKU</th>
         <th>Shop</th>
         <th>Category</th>
         <th>Cost Price</th>
-        <th>Prod. Profit</th>
+        <th>Gross Profit</th>
+        <th>Net Profit</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let batch of filteredBatches">
         <td><span class="name">{{ batch.productName }}</span></td>
-        <td><code>{{ batch.productSku }}</code></td>
         <td>{{ batch.shopName }}</td>
         <td><span class="badge">{{ batch.categoryName }}</span></td>
         <td><span class="cost-text">{{ batch.costPrice | inr }}</span></td>
-        <td><span class="profit-text highlight">{{ batch.totalProfit | inr }}</span></td>
+        <td><span class="profit-text gross">{{ batch.grossProfit | inr }}</span></td>
+        <td><span class="profit-text net" [class.text-danger]="batch.netProfit < 0">{{ batch.netProfit | inr }}</span></td>
       </tr>
     </tbody>
   </table>
