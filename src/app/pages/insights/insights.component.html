@@ -1,0 +1,109 @@
+<div class="insights-container glass-morph">
+  <div class="header-section">
+    <div class="title-group">
+      <h1>Smart Inventory Insights</h1>
+      <p class="subtitle">AI-powered risk analysis and sales optimization</p>
+    </div>
+    <div class="live-indicator">
+      <span class="dot"></span>
+      LIVE REAL-TIME PROCESSING
+    </div>
+  </div>
+
+  <div class="tabs-navigation">
+    <button [class.active]="activeTab === 'restock'" (click)="setTab('restock')">
+      <span class="icon">📦</span> Restock Needed
+      <span class="badge" *ngIf="restockData.length">{{ restockData.length }}</span>
+    </button>
+    <button [class.active]="activeTab === 'discounts'" (click)="setTab('discounts')">
+      <span class="icon">🏷️</span> Discount Opportunities
+      <span class="badge" *ngIf="discountData.length">{{ discountData.length }}</span>
+    </button>
+  </div>
+
+  <div class="content-viewport" *ngIf="!loading; else loader">
+    
+    <!-- RESTOCK TAB -->
+    <div class="insights-grid" *ngIf="activeTab === 'restock'">
+      <div class="insight-card" *ngFor="let item of restockData" [ngClass]="getUrgencyClass(item.urgency)">
+        <div class="card-header">
+          <div class="product-info">
+            <h3>{{ item.productName }}</h3>
+            <span class="sku">{{ item.sku }}</span>
+          </div>
+          <div class="urgency-tag">{{ item.urgency }}</div>
+        </div>
+        
+        <div class="stock-status">
+          <div class="stock-value">
+            <span class="label">Current Stock</span>
+            <span class="value">{{ item.currentStock }} Units</span>
+          </div>
+          <div class="prediction">
+            <span class="icon">⚠️</span>
+            <p>{{ item.reason }}</p>
+          </div>
+        </div>
+
+        <button class="action-btn" (click)="purchaseRestock(item)">Purchase Restock</button>
+      </div>
+      <div class="empty-state" *ngIf="restockData.length === 0">
+        <p>Your inventory is healthy. No restock needed.</p>
+      </div>
+    </div>
+
+    <!-- DISCOUNTS TAB -->
+    <div class="insights-grid" *ngIf="activeTab === 'discounts'">
+      <div class="insight-card discount-card" *ngFor="let item of discountData" 
+           [ngClass]="getUrgencyClass(item.urgency)"
+           [class.is-expired]="item.isExpired">
+        <div class="card-header">
+          <div class="product-info">
+            <h3>{{ item.productName }}</h3>
+            <span class="sku">{{ item.sku }}</span>
+          </div>
+          <div class="risk-badge" [style.background]="item.isExpired ? '#ef4444' : getRiskColor(item.riskScore)">
+            {{ item.isExpired ? 'CRITICAL: EXPIRED' : 'Risk: ' + item.riskScore + '%' }}
+          </div>
+        </div>
+        
+        <div class="expired-overlay" *ngIf="item.isExpired">
+          <span class="overlay-text">UNSELLABLE: ITEM EXPIRED</span>
+        </div>
+
+        <div class="risk-breakdown" *ngIf="!item.isExpired">
+          <div class="risk-bar-group">
+            <label>Expiry Risk</label>
+            <div class="progress-bg"><div class="progress-fill" [style.width.%]="item.expiryUrgency"></div></div>
+          </div>
+          <div class="risk-bar-group">
+            <label>Overstock</label>
+            <div class="progress-bg"><div class="progress-fill" [style.width.%]="item.stockPressure"></div></div>
+          </div>
+        </div>
+
+        <div class="recommendation-box" *ngIf="!item.isExpired">
+          <div class="discount-badge">{{ item.recommendedDiscount }}% OFF</div>
+          <p class="reason">Apply to mitigate <strong>{{ item.riskScore }}%</strong> inventory risk.</p>
+        </div>
+
+        <button class="action-btn apply-discount" 
+                [disabled]="item.isExpired"
+                (click)="applySmartDiscount(item)">
+          {{ item.isExpired ? 'Remove from Stock' : 'Apply Smart Discount' }}
+        </button>
+      </div>
+      <div class="empty-state" *ngIf="discountData.length === 0">
+        <p>No high-risk inventory detected at this time.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template #loader>
+    <div class="loader-container">
+      <div class="spinner"></div>
+      <p>Processing Real-time Inventory Data...</p>
+    </div>
+  </ng-template>
+</div>

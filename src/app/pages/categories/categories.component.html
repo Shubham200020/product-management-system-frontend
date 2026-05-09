@@ -1,14 +1,15 @@
-<div class="page-header">
+<div class="page-header" *ngIf="!selectedCategory">
   <div>
     <h1>Categories</h1>
     <p>Manage product categories</p>
   </div>
   <button class="btn btn-primary" (click)="toggleForm()">
-    {{ showForm ? 'Cancel' : 'Add Category' }}
+    {{ showForm ? 'Cancel' : (isEditing ? 'Cancel Edit' : 'Add Category') }}
   </button>
 </div>
 
-<div *ngIf="showForm" class="form-container glass card animate-slide-down">
+<!-- Category Form -->
+<div *ngIf="showForm && !selectedCategory" class="form-container glass card animate-slide-down">
   <form (ngSubmit)="onSubmit()" #catForm="ngForm">
     <div class="input-group">
       <label>Category Name</label>
@@ -22,23 +23,109 @@
       </select>
     </div>
     <div class="form-actions" style="margin-top: 20px;">
-      <button type="submit" class="btn btn-primary" [disabled]="!catForm.valid">Save Category</button>
+      <button type="submit" class="btn btn-primary" [disabled]="!catForm.valid">
+        {{ isEditing ? 'Update Category' : 'Save Category' }}
+      </button>
       <button type="button" class="btn btn-secondary" (click)="toggleForm()">Cancel</button>
     </div>
   </form>
 </div>
 
+<!-- Loader -->
 <div *ngIf="loading" class="loader-container">
   <div class="loader large"></div>
 </div>
 
-<div *ngIf="!loading && !showForm" class="categories-grid card-grid">
+<!-- Categories Grid -->
+<div *ngIf="!loading && !showForm && !selectedCategory" class="categories-grid card-grid animate-fade-in">
   <div *ngFor="let cat of categories" class="category-card glass card">
-    <div class="card-icon">📁</div>
-    <h3>{{ cat.name }}</h3>
+    <div class="card-clickable" (click)="viewProducts(cat)">
+      <div class="card-icon">📁</div>
+      <h3>{{ cat.name }}</h3>
+      <p class="shop-badge">{{ cat.shop?.name }}</p>
+    </div>
+    <div class="card-actions">
+      <button class="icon-btn edit" (click)="editCategory(cat)" title="Edit">✏️</button>
+      <button class="icon-btn delete" (click)="deleteCategory(cat.id)" title="Delete">🗑️</button>
+    </div>
   </div>
 
   <div *ngIf="categories.length === 0" class="empty-state">
     <p>No categories found. Add one to get started.</p>
+  </div>
+</div>
+
+<!-- Products in Category View -->
+<div *ngIf="selectedCategory" class="product-list-view animate-slide-up">
+  <div class="view-header">
+    <button class="btn btn-secondary btn-back" (click)="closeProductList()">
+      <span class="icon">←</span> Back
+    </button>
+    <div class="header-content">
+      <h2>{{ selectedCategory.name }}</h2>
+      <p class="subtitle">Viewing products in this category</p>
+    </div>
+  </div>
+
+  <div *ngIf="loadingProducts" class="loader-container">
+    <div class="loader large"></div>
+  </div>
+
+  <div *ngIf="!loadingProducts" class="category-dashboard animate-fade-in">
+    <!-- Stats Row -->
+    <div class="stats-grid">
+      <div class="stat-card glass">
+        <span class="stat-label">Total Products</span>
+        <span class="stat-value">{{ categoryStats.total }}</span>
+      </div>
+      <div class="stat-card glass" [class.warning]="categoryStats.lowStock > 0">
+        <span class="stat-label">Low Stock</span>
+        <span class="stat-value">{{ categoryStats.lowStock }}</span>
+      </div>
+      <div class="stat-card glass" [class.danger]="categoryStats.outOfStock > 0">
+        <span class="stat-label">Out of Stock</span>
+        <span class="stat-value">{{ categoryStats.outOfStock }}</span>
+      </div>
+      <div class="stat-card glass accent">
+        <span class="stat-label">Inventory Value</span>
+        <span class="stat-value">{{ categoryStats.totalValue | inr }}</span>
+      </div>
+    </div>
+
+    <!-- Product Cards Grid -->
+    <div class="product-cards-grid">
+      <div *ngFor="let prod of productsInCategory" class="product-item-card glass animate-slide-up">
+        <div class="product-header">
+          <div class="product-info">
+            <span class="brand-tag">{{ prod.brand }}</span>
+            <h3>{{ prod.name }}</h3>
+          </div>
+          <span class="status-pill" [attr.data-status]="prod.stockStatus">
+            {{ prod.stockStatus?.replace('_', ' ') }}
+          </span>
+        </div>
+        
+        <div class="product-details">
+          <div class="detail">
+            <span class="label">Price</span>
+            <span class="value highlighting">{{ prod.mrp | inr }}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Stock</span>
+            <span class="value" [class.text-danger]="prod.availableStock === 0">{{ prod.availableStock }} Units</span>
+          </div>
+        </div>
+
+        <div class="product-footer">
+          <span class="sku">SKU: {{ prod.sku || 'N/A' }}</span>
+          <span class="type-badge">{{ prod.type }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="productsInCategory.length === 0" class="empty-state glass">
+      <div class="empty-icon">📦</div>
+      <p>No products found in this category.</p>
+    </div>
   </div>
 </div>

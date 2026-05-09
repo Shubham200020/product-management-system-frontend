@@ -26,15 +26,31 @@
           <div *ngFor="let product of filteredProducts" 
                class="product-item" 
                [class.out-of-stock]="(product.availableStock || 0) <= 0"
-               (click)="(product.availableStock || 0) > 0 && addToCart(product)">
+               [class.expired]="product.stockStatus === 'EXPIRED'"
+               [class.mixed]="product.stockStatus === 'PARTIALLY_EXPIRED'"
+               (click)="(product.availableStock || 0) > (product.expiredStock || 0) && addToCart(product)">
             <div class="info">
               <span class="name">{{ product.name }}</span>
               <span class="sku">{{ product.sku }}</span>
-              <span class="stock-badge" [class.low]="(product.availableStock || 0) < 10">
-                Stock: {{ product.availableStock || 0 }}
-              </span>
+              <div class="price-info">
+                <span class="current-price">{{ product.mrp | inr }}</span>
+                <span *ngIf="product.recommendedDiscount" class="rec-discount">{{ product.recommendedDiscount }}% REC. OFF</span>
+              </div>
+              <div class="badge-group-vertical">
+                <span class="stock-badge fresh" *ngIf="(product.freshStock || 0) > 0">
+                  Fresh Stock: {{ product.freshStock }}
+                </span>
+                <span class="stock-badge near-expiry" *ngIf="(product.nearExpiryStock || 0) > 0">
+                  Old Stock: {{ product.nearExpiryStock }} (Discounted)
+                </span>
+                <span class="stock-badge expired" *ngIf="(product.expiredStock || 0) > 0">
+                  Expired: {{ product.expiredStock }} (Discarded)
+                </span>
+              </div>
             </div>
-            <button class="add-btn" [disabled]="(product.availableStock || 0) <= 0">+</button>
+            <button class="add-btn" 
+                    [disabled]="(product.freshStock || 0) + (product.nearExpiryStock || 0) <= 0"
+                    (click)="addToCart(product)">+</button>
           </div>
           <div *ngIf="filteredProducts.length === 0" class="empty-state">
             No products found.
@@ -87,12 +103,15 @@
 
               <div class="price-section">
                 <div class="price-box">
-                  <span class="price-label">MRP</span>
-                  <span class="price-value original">{{ item.mrp | inr }}</span>
+                  <span class="price-label">Unit Price</span>
+                  <div class="price-stack">
+                    <span class="price-value original" *ngIf="item.discount > 0">{{ item.mrp | inr }}</span>
+                    <span class="price-value final">{{ item.price | inr }}</span>
+                  </div>
                 </div>
                 <div class="price-box">
-                  <span class="price-label">Final Price</span>
-                  <span class="price-value final">{{ item.price | inr }}</span>
+                  <span class="price-label">Line Total</span>
+                  <span class="price-value total-val">{{ (item.price * item.quantity) | inr }}</span>
                 </div>
               </div>
             </div>

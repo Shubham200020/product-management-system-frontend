@@ -3,11 +3,8 @@
   <div class="welcome-section">
     <div class="welcome-card glass">
       <div class="welcome-content">
-        <h1>Welcome to Product Management System</h1>
-        <p>Manage your products, shops, and sales all in one place</p>
-      </div>
-      <div class="welcome-decoration">
-        <div class="decoration-circle"></div>
+        <h1>Dashboard Overview</h1>
+        <p>Monitor your business performance and inventory insights in real-time.</p>
       </div>
     </div>
   </div>
@@ -35,82 +32,58 @@
     </div>
   </div>
 
-  <!-- Quick Actions -->
-  <div class="quick-actions">
-    <h2>Quick Actions</h2>
-    <div class="action-grid">
-      <div class="action-card" style="border-left: 4px solid #6366f1;">
-        <div class="action-icon">➕</div>
-        <div class="action-content">
-          <h3>Add New Product</h3>
-          <p>Create a new product in your inventory</p>
+  <div class="dashboard-secondary-row">
+    <!-- Smart Inventory Insights (AI Powered) -->
+    <div class="insights-section glass animate-slide-up" style="animation-delay: 0.4s">
+      <div class="section-header">
+        <div class="title-with-badge">
+          <h2>Smart Insights</h2>
+          <span class="ai-badge">AI ANALYTICS</span>
         </div>
-        <span class="action-arrow">→</span>
+        <button class="view-all-link" routerLink="/dashboard/restock">Full Report →</button>
       </div>
 
-      <div class="action-card" style="border-left: 4px solid #10b981;">
-        <div class="action-icon">📊</div>
-        <div class="action-content">
-          <h3>View Sales</h3>
-          <p>Check your latest sales transactions</p>
+      <div class="recommendations-container" *ngIf="recommendations.length > 0">
+        <div *ngFor="let item of recommendations" class="insight-card" [attr.data-urgency]="item.urgency">
+          <div class="insight-header">
+            <span class="urgency-dot"></span>
+            <div class="product-info">
+              <h3>{{ item.productName }}</h3>
+              <p class="insight-reason">{{ item.reason }}</p>
+            </div>
+            <button class="btn-quick-restock" routerLink="/dashboard/purchases">Restock</button>
+          </div>
         </div>
-        <span class="action-arrow">→</span>
       </div>
 
-      <div class="action-card" style="border-left: 4px solid #ec4899;">
-        <div class="action-icon">🏪</div>
-        <div class="action-content">
-          <h3>Manage Shops</h3>
-          <p>Update shop details and settings</p>
-        </div>
-        <span class="action-arrow">→</span>
-      </div>
-
-      <div class="action-card" style="border-left: 4px solid #22d3ee;">
-        <div class="action-icon">👥</div>
-        <div class="action-content">
-          <h3>User Management</h3>
-          <p>Manage system users and permissions</p>
-        </div>
-        <span class="action-arrow">→</span>
+      <div class="empty-insights" *ngIf="recommendations.length === 0">
+        <p>✨ Inventory optimized. No urgent actions detected.</p>
       </div>
     </div>
-  </div>
 
-  <!-- System Status -->
-  <div class="recent-activity" *ngIf="systemStatus$ | async as status">
-    <h2>System Status (Real-time)</h2>
-    <div class="activity-list">
-      <div class="activity-item">
-        <div class="activity-indicator" [style.background]="status.apiStatus === 'OPTIMAL' ? 'var(--success)' : '#ef4444'"></div>
-        <div class="activity-content">
-          <p class="activity-title">API Server</p>
-          <p class="activity-time">{{ status.apiStatus === 'OPTIMAL' ? 'Running at optimal performance' : 'Service Disrupted' }}</p>
-        </div>
-        <div class="activity-badge" [style.background]="status.apiStatus === 'OPTIMAL' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'" [style.color]="status.apiStatus === 'OPTIMAL' ? 'var(--success)' : '#ef4444'">
-          {{ status.apiStatus }}
-        </div>
+    <!-- System Status -->
+    <div class="system-status-section glass animate-slide-up" style="animation-delay: 0.5s" *ngIf="systemStatus$ | async as status">
+      <div class="section-header">
+        <h2>System Status</h2>
       </div>
-
-      <div class="activity-item">
-        <div class="activity-indicator" [style.background]="status.databaseConnected ? '#f59e0b' : '#ef4444'"></div>
-        <div class="activity-content">
-          <p class="activity-title">Database Connection</p>
-          <p class="activity-time">{{ status.databaseConnected ? 'Connected and running smoothly' : 'Database Connection Failed' }}</p>
+      <div class="status-list">
+        <div class="status-item">
+          <span class="status-label">API Health</span>
+          <span class="status-value" [style.color]="status.apiStatus === 'OPTIMAL' ? 'var(--success)' : '#ef4444'">
+            {{ status.apiStatus }}
+          </span>
         </div>
-        <div class="activity-badge" [style.background]="status.databaseConnected ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)'" [style.color]="status.databaseConnected ? '#f59e0b' : '#ef4444'">
-          {{ status.databaseConnected ? 'Connected' : 'Error' }}
+        <div class="status-item">
+          <span class="status-label">DB Connection</span>
+          <span class="status-value" [style.color]="status.databaseConnected ? 'var(--success)' : '#ef4444'">
+            {{ status.databaseConnected ? 'ONLINE' : 'OFFLINE' }}
+          </span>
         </div>
-      </div>
-
-      <div class="activity-item">
-        <div class="activity-indicator" style="background: var(--accent);"></div>
-        <div class="activity-content">
-          <p class="activity-title">Server Memory</p>
-          <p class="activity-time">Used: {{ status.memoryUsedMB }}MB / Total: {{ status.memoryMaxMB }}MB</p>
-        </div>
-        <div class="activity-badge" style="background: rgba(34, 211, 238, 0.2); color: var(--accent);">
-          {{ (status.memoryUsedMB / status.memoryMaxMB * 100).toFixed(1) }}%
+        <div class="status-item">
+          <span class="status-label">Memory Usage</span>
+          <div class="memory-progress">
+            <div class="progress-fill" [style.width]="(status.memoryUsedMB / status.memoryMaxMB * 100) + '%'"></div>
+          </div>
         </div>
       </div>
     </div>

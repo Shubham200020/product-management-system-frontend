@@ -94,14 +94,17 @@ export class SalesComponent implements OnInit {
     const existing = this.cart.find(item => item.product.id === product.id);
     if (existing) {
       existing.quantity++;
+      this.calculatePrice(existing);
     } else {
-      this.cart.push({ 
+      const newItem = { 
         product, 
         quantity: 1, 
         mrp: product.mrp || 0,
-        discount: 0,
+        discount: product.nextBatchDiscount || 0,
         price: product.mrp || 0 
-      });
+      };
+      this.calculatePrice(newItem);
+      this.cart.push(newItem);
     }
   }
 

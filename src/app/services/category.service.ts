@@ -23,4 +23,12 @@ export class CategoryService {
   createCategory(category: Category): Observable<Category> {
     return this.http.post<Category>(this.apiUrl, category, { withCredentials: true });
   }
+
+  updateCategory(id: number, category: Category): Observable<Category> {
+    return this.http.put<Category>(`${this.apiUrl}/${id}`, category, { withCredentials: true });
+  }
+
+  deleteCategory(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
 }

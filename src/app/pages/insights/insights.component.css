@@ -1,0 +1,272 @@
+.insights-container {
+    padding: 2rem;
+    color: white;
+    min-height: 80vh;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title-group h1 {
+    font-size: 2.2rem;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    color: #888;
+    margin-top: 0.5rem;
+}
+
+.live-indicator {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #00ff88;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #00ff88;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ff88;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.tabs-navigation {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 1rem;
+}
+
+.tabs-navigation button {
+    background: none;
+    border: none;
+    color: #888;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: all 0.3s;
+    border-radius: 12px;
+}
+
+.tabs-navigation button.active {
+    background: rgba(255,255,255,0.05);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.badge {
+    background: #3f51b5;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.insight-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.insight-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.insight-card.high { border-left: 5px solid #ff4d4d; }
+.insight-card.medium { border-left: 5px solid #ffa500; }
+.insight-card.low { border-left: 5px solid #4caf50; }
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.product-info h3 { margin: 0; font-size: 1.2rem; }
+.sku { font-size: 0.8rem; color: #666; }
+
+.urgency-tag {
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+}
+
+.stock-status {
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.prediction {
+    margin-top: 1rem;
+    display: flex;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.action-btn:hover { opacity: 0.9; }
+
+/* Discount Specifics */
+.risk-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.risk-breakdown {
+    margin-bottom: 1.5rem;
+}
+
+.risk-bar-group {
+    margin-bottom: 0.8rem;
+}
+
+.risk-bar-group label {
+    display: block;
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.progress-bg {
+    background: rgba(255,255,255,0.05);
+    height: 6px;
+    border-radius: 3px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #6366f1;
+    border-radius: 3px;
+}
+
+.recommendation-box {
+    background: rgba(0, 255, 136, 0.05);
+    border: 1px dashed rgba(0, 255, 136, 0.2);
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.discount-badge {
+    color: #00ff88;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.reason { font-size: 0.85rem; color: #888; margin-top: 0.5rem; }
+
+.apply-discount {
+    background: linear-gradient(135deg, #00ff88 0%, #00bd70 100%);
+    color: #000;
+}
+
+.apply-discount:disabled {
+    background: #ef4444 !important;
+    color: white !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Expired Specific Styling */
+.insight-card.is-expired {
+  border: 2px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15) !important;
+}
+
+.expired-overlay {
+  margin: 15px 0;
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px dashed #ef4444;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.overlay-text {
+  color: #ef4444;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.insight-card.is-expired h3 {
+  color: #fca5a5 !important;
+}
+
+/* Loader */
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 40vh;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

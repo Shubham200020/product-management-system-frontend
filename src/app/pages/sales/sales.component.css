@@ -207,6 +207,35 @@
   border-color: rgba(239, 68, 68, 0.2);
 }
 
+/* Expired Product Styling */
+.product-item.expired {
+  border: 2px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15) !important;
+  cursor: not-allowed;
+}
+
+.product-item.expired .name {
+  color: #fca5a5 !important;
+}
+
+.product-item.expired .stock-badge {
+  opacity: 0.8;
+}
+
+.expired-badge {
+  background: rgba(220, 38, 38, 0.2) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  margin-left: 8px;
+  font-weight: 800 !important;
+}
+
+.product-item.expired:hover {
+  transform: none !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.25) !important;
+}
+
 .checkout-panel {
   display: flex;
   flex-direction: column;
@@ -351,14 +380,89 @@
   font-weight: 700;
 }
 
-.price-value.original {
-  color: #94a3b8;
+.price-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.current-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #10b981;
+}
+
+.rec-discount {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.stock-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  width: fit-content;
+}
+
+.stock-badge.fresh {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.stock-badge.near-expiry {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.stock-badge.expired {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
   text-decoration: line-through;
+}
+
+.badge-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.price-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-value.original {
+  color: #ef4444 !important;
+  text-decoration: line-through;
+  font-size: 0.8rem !important;
+  opacity: 0.7;
 }
 
 .price-value.final {
   color: #10b981;
-  font-size: 1.1rem;
+  font-size: 1.2rem !important;
+}
+
+.total-val {
+  color: white !important;
+  font-size: 1.2rem !important;
 }
 
 .empty-cart {

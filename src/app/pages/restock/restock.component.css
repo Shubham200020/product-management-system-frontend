@@ -1,0 +1,129 @@
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.recommendation-card {
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.urgency-ribbon {
+  position: absolute;
+  top: 15px;
+  right: -35px;
+  transform: rotate(45deg);
+  padding: 5px 40px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: white;
+}
+
+.high .urgency-ribbon { background: #ef4444; }
+.medium .urgency-ribbon { background: #f59e0b; }
+.low .urgency-ribbon { background: #10b981; }
+
+.high { border-left: 4px solid #ef4444; }
+.medium { border-left: 4px solid #f59e0b; }
+.low { border-left: 4px solid #10b981; }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.product-info h3 {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.sku {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.stock-status {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
+
+.current-stock {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.high .current-stock { color: #ef4444; }
+.medium .current-stock { color: #f59e0b; }
+
+.stock-status .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.reason-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.reason-box p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.card-actions {
+  margin-top: auto;
+}
+
+.btn-primary {
+  width: 100%;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.stats-badge {
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stats-badge .count {
+  background: var(--primary);
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}

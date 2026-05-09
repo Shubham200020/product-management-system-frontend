@@ -84,6 +84,7 @@ export class HomeComponent implements OnInit {
     }
   ];
   loading = true;
+  recommendations: any[] = [];
   systemStatus$!: Observable<SystemStatus>;
 
   constructor(
@@ -165,12 +166,24 @@ export class HomeComponent implements OnInit {
         this.checkLoadingComplete();
       }
     });
+
+    // Load Recommendations
+    this.productService.getRestockRecommendations().subscribe({
+      next: (recs) => {
+        this.recommendations = recs.slice(0, 3); // Top 3 only for dashboard
+        this.checkLoadingComplete();
+      },
+      error: (err) => {
+        console.error('Error loading recommendations', err);
+        this.checkLoadingComplete();
+      }
+    });
   }
 
   private completedRequests = 0;
   private checkLoadingComplete() {
     this.completedRequests++;
-    if (this.completedRequests >= 2) {
+    if (this.completedRequests >= 3) {
       this.loading = false;
     }
   }

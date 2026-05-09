@@ -3,7 +3,8 @@
     <h1>Purchases</h1>
     <p>Add and manage inventory stock</p>
   </div>
-  <button class="btn btn-primary" (click)="toggleForm()">
+  <button class="btn" [class.btn-danger]="showForm" [class.btn-primary]="!showForm" (click)="toggleForm()">
+    <span class="icon">{{ showForm ? '✕' : '➕' }}</span>
     {{ showForm ? 'Cancel' : 'Add Purchase' }}
   </button>
 </div>
@@ -31,13 +32,17 @@
       </div>
 
       <div class="items-list">
-        <div *ngFor="let item of currentPurchase.items; let i = index" class="item-row glass">
+        <div *ngFor="let item of currentPurchase.items; let i = index" class="item-row glass animate-slide-in">
           <div class="input-group">
             <label>Product</label>
-            <select [name]="'product-' + i" [(ngModel)]="item.productId" required>
+            <select [name]="'product-' + i" [(ngModel)]="item.productId" (ngModelChange)="onProductChange(i)" required>
               <option [ngValue]="0">Select Product</option>
               <option *ngFor="let p of products" [ngValue]="p.id">{{ p.name }} ({{ p.sku }})</option>
             </select>
+            <div *ngIf="getProductById(item.productId)?.expiredStock! > 0" class="expired-warning-box">
+              <span class="warn-text">⚠️ {{ getProductById(item.productId)?.expiredStock }} items expired!</span>
+              <button type="button" class="btn-cleanup" (click)="clearExpired(i)">Discard Old Stock</button>
+            </div>
           </div>
           <div class="input-group">
             <label>Quantity</label>
@@ -45,13 +50,23 @@
           </div>
           <div class="input-group">
             <label>Cost Price</label>
-            <input type="number" [name]="'cost-' + i" [(ngModel)]="item.costPrice" required min="0">
+            <div class="input-with-symbol">
+              <span class="symbol">₹</span>
+              <input type="number" [name]="'cost-' + i" [(ngModel)]="item.costPrice" required min="0">
+            </div>
+          </div>
+          <div class="input-group">
+            <label>MRP (Edit to Update)</label>
+            <div class="input-with-symbol">
+              <span class="symbol">₹</span>
+              <input type="number" [name]="'mrp-' + i" [(ngModel)]="item.mrp" required min="0">
+            </div>
           </div>
           <div class="input-group">
             <label>Expiry (Opt)</label>
             <input type="date" [name]="'expiry-' + i" [(ngModel)]="item.expiryDate">
           </div>
-          <button type="button" class="remove-btn" (click)="removeItem(i)">✕</button>
+          <button type="button" class="remove-btn" (click)="removeItem(i)" title="Remove Item">✕</button>
         </div>
         <div *ngIf="currentPurchase.items.length === 0" class="empty-items">
           No items added yet. Click "+ Add Item" to start.
@@ -60,7 +75,8 @@
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn btn-primary" [disabled]="!purchaseForm.valid || currentPurchase.items.length === 0 || submitting">
+      <button type="submit" class="btn btn-success" [disabled]="!purchaseForm.valid || currentPurchase.items.length === 0 || submitting">
+        <span *ngIf="!submitting">💾</span>
         {{ submitting ? 'Saving...' : 'Save Purchase & Update Stock' }}
       </button>
     </div>
@@ -77,7 +93,7 @@
       <tr>
         <th>Date</th>
         <th>Shop</th>
-        <th>Supplier</th>
+        <th>Product Name</th>
         <th>Items</th>
         <th>Total Cost</th>
       </tr>
@@ -86,7 +102,7 @@
       <tr *ngFor="let p of purchases">
         <td>{{ p.purchaseDate | date:'short' }}</td>
         <td>{{ p.shop?.name }}</td>
-        <td>{{ p.supplier }}</td>
+        <td class="product-name-cell">{{ getProductNames(p) }}</td>
         <td>{{ p.inventoryBatches?.length }} items</td>
         <td class="amount">{{ p.totalCost | inr }}</td>
       </tr>

@@ -5,6 +5,7 @@ import { PurchaseService, PurchaseRequest, PurchaseItemRequest } from '../../ser
 import { ProductService, Product } from '../../services/product.service';
 import { ShopService, Shop } from '../../services/shop.service';
 import { InrPipe } from '../../pipes/inr.pipe';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-purchases',
@@ -27,12 +28,40 @@ export class PurchasesComponent implements OnInit {
   constructor(
     private purchaseService: PurchaseService,
     private productService: ProductService,
-    private shopService: ShopService
+    private shopService: ShopService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
     this.loadData();
     this.loadPurchases();
+    this.checkRestockParameter();
+  }
+
+  checkRestockParameter() {
+    this.route.queryParams.subscribe(params => {
+      const restockId = params['restockProductId'];
+      if (restockId) {
+        this.showForm = true;
+        this.addItem();
+        const lastIndex = this.currentPurchase.items.length - 1;
+        this.currentPurchase.items[lastIndex].productId = +restockId;
+        setTimeout(() => this.onProductChange(lastIndex), 500);
+      }
+    });
+  }
+
+  clearExpired(index: number) {
+    const item = this.currentPurchase.items[index];
+    const product = this.getProductById(item.productId);
+    if (product && product.id && confirm(`Are you sure you want to discard all expired stock for ${product.name}?`)) {
+      this.productService.clearExpiredStock(product.id).subscribe({
+        next: () => {
+          alert('Expired stock cleared!');
+          this.loadData(); // Refresh stock counts
+        }
+      });
+    }
   }
 
   resetPurchase(): PurchaseRequest {
@@ -52,7 +81,10 @@ export class PurchasesComponent implements OnInit {
     this.loading = true;
     this.purchaseService.getPurchases().subscribe({
       next: (data) => {
-        this.purchases = data;
+        // Sort by date: Newest first
+        this.purchases = data.sort((a, b) => {
+          return new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime();
+        });
         this.loading = false;
       },
       error: (err) => {
@@ -73,8 +105,17 @@ export class PurchasesComponent implements OnInit {
     this.currentPurchase.items.push({
       productId: 0,
       quantity: 1,
-      costPrice: 0
+      costPrice: 0,
+      mrp: 0
     });
+  }
+
+  onProductChange(index: number) {
+    const item = this.currentPurchase.items[index];
+    const product = this.getProductById(item.productId);
+    if (product) {
+      item.mrp = product.mrp;
+    }
   }
 
   removeItem(index: number) {
@@ -102,5 +143,22 @@ export class PurchasesComponent implements OnInit {
         this.submitting = false;
       }
     });
+  }
+
+  getProductById(id: number): Product | undefined {
+    return this.products.find(p => p.id === id);
+  }
+
+  getProductNames(purchase: any): string {
+    if (!purchase.inventoryBatches || purchase.inventoryBatches.length === 0) return 'No products';
+    
+    const names = purchase.inventoryBatches
+      .map((batch: any) => batch.product?.name)
+      .filter((name: any) => !!name);
+    
+    const uniqueNames = Array.from(new Set(names));
+    
+    if (uniqueNames.length <= 2) return uniqueNames.join(', ');
+    return `${uniqueNames[0]}, ${uniqueNames[1]} (+${uniqueNames.length - 2} more)`;
   }
 }

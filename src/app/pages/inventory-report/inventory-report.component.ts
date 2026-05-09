@@ -42,6 +42,8 @@ export class InventoryReportComponent implements OnInit {
     private shopService: ShopService,
     private route: ActivatedRoute
   ) {}
+  
+  Math = Math;
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -61,7 +63,7 @@ export class InventoryReportComponent implements OnInit {
   loadData() {
     this.loading = true;
     forkJoin({
-      report: this.productService.getInventoryReport(this.startDate, this.endDate),
+      report: this.productService.getInventoryReport(this.startDate, this.endDate, this.selectedStatus),
       categories: this.categoryService.getCategories(),
       shops: this.shopService.getShops()
     }).subscribe({
@@ -84,9 +86,51 @@ export class InventoryReportComponent implements OnInit {
     this.filteredBatches = this.batches.filter(b => {
       const matchCategory = !this.selectedCategory || b.categoryName === this.selectedCategory;
       const matchShop = !this.selectedShop || b.shopName === this.selectedShop;
-      const matchStatus = !this.selectedStatus || b.stockStatus === this.selectedStatus;
+      
+      // If no specific status is selected, show everything EXCEPT Out of Stock
+      let matchStatus = false;
+      if (this.selectedStatus === 'SHOW_ALL') {
+        matchStatus = true;
+      } else if (this.selectedStatus === 'EXPIRED') {
+        matchStatus = b.stockStatus === 'EXPIRED' || b.stockStatus === 'NEAR_EXPIRY';
+      } else if (this.selectedStatus) {
+        matchStatus = b.stockStatus === this.selectedStatus;
+      } else {
+        matchStatus = b.stockStatus !== 'OUT_OF_STOCK';
+      }
+      
       const matchSearch = !search || b.productName.toLowerCase().includes(search) || b.productSku.toLowerCase().includes(search);
       return matchCategory && matchShop && matchStatus && matchSearch;
+    });
+
+    // Smart Sorting Logic
+    this.filteredBatches.sort((a, b) => {
+      // 1. Primary: Expiry Date (Ascending - soonest expiry first)
+      const dateA = a.expiryDate ? new Date(a.expiryDate).getTime() : Infinity;
+      const dateB = b.expiryDate ? new Date(b.expiryDate).getTime() : Infinity;
+      
+      if (dateA !== dateB) return dateA - dateB;
+
+      // 2. Secondary: If no expiry or same date, sort by loss (Descending)
+      const lossA = a.potentialLoss || 0;
+      const lossB = b.potentialLoss || 0;
+      return lossB - lossA;
+    });
+
+    // Calculate Days Left for UI
+    this.filteredBatches.forEach(b => {
+      if (b.expiryDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const expiry = new Date(b.expiryDate);
+        expiry.setHours(0, 0, 0, 0);
+          
+        const diffTime = expiry.getTime() - today.getTime();
+        // Use Math.round to avoid floating point issues and accurately detect same day (0)
+        b.daysLeft = Math.round(diffTime / (1000 * 60 * 60 * 24));
+      } else {
+        b.daysLeft = null;
+      }
     });
 
     this.calculateTotals();

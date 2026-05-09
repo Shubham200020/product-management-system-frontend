@@ -6,6 +6,7 @@ export interface PurchaseItemRequest {
   productId: number;
   quantity: number;
   costPrice: number;
+  mrp: number;
   expiryDate?: string;
 }
 

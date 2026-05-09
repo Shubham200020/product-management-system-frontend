@@ -1,7 +1,24 @@
 <div class="page-header">
-  <div>
+  <div class="header-main">
     <h1>Detailed Inventory Report</h1>
-    <p>Comprehensive tracking of all product batches and profitability</p>
+    <div class="header-stats">
+      <span class="stat-badge">Total Batches: {{ filteredBatches.length }}</span>
+      <button class="btn btn-primary btn-sm" (click)="loadData()">🔄 Refresh Data</button>
+    </div>
+  </div>
+  <div class="expiry-legend glass">
+    <div class="legend-item">
+      <span class="dot red"></span>
+      <span class="label">Expired / Today</span>
+    </div>
+    <div class="legend-item">
+      <span class="dot orange"></span>
+      <span class="label">Soon (< 30d)</span>
+    </div>
+    <div class="legend-item">
+      <span class="dot green"></span>
+      <span class="label">Safe (> 30d)</span>
+    </div>
   </div>
   <button class="btn btn-secondary" onclick="history.back()">Back</button>
 </div>
@@ -28,10 +45,12 @@
   <div class="filter-group">
     <label>Filter by Status</label>
     <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
-      <option value="">All Statuses</option>
-      <option value="IN_STOCK">In Stock</option>
+      <option value="">Active Inventory (In Stock)</option>
+      <option value="SHOW_ALL">All (Incl. Out of Stock)</option>
+      <option value="IN_STOCK">In Stock Only</option>
       <option value="LOW_STOCK">Low Stock Alert</option>
       <option value="OUT_OF_STOCK">Out of Stock</option>
+      <option value="EXPIRED">Expired Items</option>
     </select>
   </div>
   <div class="filter-group">
@@ -71,51 +90,119 @@
   </div>
 </div>
 
-<div *ngIf="!loading" class="report-container glass card animate-slide-up">
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Shop</th>
-        <th>Category</th>
-        <th>Buying Date</th>
-        <th *ngIf="selectedStatus !== 'OUT_OF_STOCK'">Expiry Date</th>
-        <th>Purchased</th>
-        <th>Remaining</th>
-        <th>Gross Profit</th>
-        <th>Net Profit</th>
-        <th>Investment</th>
-        <th>Loss/Waste</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let batch of filteredBatches">
-        <td><span class="name">{{ batch.productName }}</span></td>
-        <td>{{ batch.shopName }}</td>
-        <td><span class="badge">{{ batch.categoryName }}</span></td>
-        <td>{{ batch.purchaseDate | date:'mediumDate' }}</td>
-        <td *ngIf="selectedStatus !== 'OUT_OF_STOCK'">
-          <span [class.text-danger]="batch.expiryDate && compareDates(batch.expiryDate, today)">
-            {{ batch.expiryDate ? (batch.expiryDate | date:'mediumDate') : 'No Expiry' }}
+<div *ngIf="!loading" class="report-grid animate-slide-up">
+  <div *ngFor="let batch of filteredBatches" class="report-card glass-card">
+    <div class="card-header">
+      <div class="product-info">
+        <h3 class="name">{{ batch.productName }}</h3>
+        <span class="sku">{{ batch.productSku }}</span>
+      </div>
+      <span class="status-badge" [attr.data-status]="batch.stockStatus">
+        {{ batch.stockStatus?.replace('_', ' ') || 'UNKNOWN' }}
+      </span>
+    </div>
+
+    <div class="card-body">
+      <div class="info-row grid-3">
+        <div class="info-item">
+          <label>Shop</label>
+          <span>{{ batch.shopName }}</span>
+        </div>
+        <div class="info-item">
+          <label>Category</label>
+          <span class="badge">{{ batch.categoryName }}</span>
+        </div>
+        <div class="info-item">
+          <label>Supplier</label>
+          <span class="supplier-text">{{ batch.supplierName }}</span>
+        </div>
+      </div>
+
+      <div class="info-row grid-2">
+        <div class="info-item">
+          <label>Buying Date</label>
+          <span class="date-text">{{ batch.purchaseDate | date:'medium' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Batch ID</label>
+          <span class="sku">#{{ batch.purchaseDate | date:'yyMMddHHmm' }}</span>
+        </div>
+      </div>
+
+      <div class="expiry-section">
+        <div class="expiry-meta">
+          <span class="date-label">Expires: {{ batch.expiryDate ? (batch.expiryDate | date:'mediumDate') : 'No Expiry' }}</span>
+            <span class="days-text" [ngClass]="{
+              'expired': batch.daysLeft !== null && batch.daysLeft <= 0,
+              'soon': batch.daysLeft !== null && batch.daysLeft > 0 && batch.daysLeft <= 30,
+              'safe': batch.daysLeft !== null && batch.daysLeft > 30
+            }">
+              {{ batch.daysLeft !== null ? 
+                (batch.daysLeft < 0 ? 'EXPIRED ' + Math.abs(batch.daysLeft) + 'd AGO' : 
+                 (batch.daysLeft === 0 ? 'EXPIRES TODAY' : batch.daysLeft + ' DAYS LEFT')) 
+                : '' }}
+            </span>
+        </div>
+        <div *ngIf="batch.daysLeft !== null" class="mini-progress">
+          <div class="fill" [style.width.%]="batch.daysLeft <= 0 ? 100 : (batch.daysLeft > 100 ? 0 : 100 - batch.daysLeft)" [ngClass]="{
+            'expired': batch.daysLeft <= 0,
+            'soon': batch.daysLeft > 0 && batch.daysLeft <= 30,
+            'safe': batch.daysLeft > 30
+          }"></div>
+        </div>
+      </div>
+
+      <div class="pricing-row">
+        <div class="price-item">
+          <label>Cost / Unit</label>
+          <span class="price-val">{{ batch.costPrice | inr }}</span>
+        </div>
+        <div class="price-item">
+          <label>MRP / Unit</label>
+          <span class="price-val mrp">{{ batch.mrp | inr }}</span>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric">
+          <label>Total Purchased</label>
+          <span class="value">{{ batch.initialQuantity }}</span>
+        </div>
+        <div class="metric">
+          <label>Current Stock</label>
+          <span class="value remaining" [attr.data-status]="batch.stockStatus">{{ batch.remainingQuantity }}</span>
+        </div>
+      </div>
+
+      <div class="financials">
+        <div class="fin-item">
+          <label>Total Investment</label>
+          <span class="val">{{ batch.investment | inr }}</span>
+        </div>
+        <div class="fin-item highlight">
+          <label>Smart Discount (Rec.)</label>
+          <span class="val discount-badge">{{ batch.recommendedDiscount }}% OFF</span>
+        </div>
+        <div class="fin-item">
+          <label>Loss if Expired</label>
+          <span class="val text-danger">{{ batch.potentialLoss | inr }}</span>
+        </div>
+        <div class="fin-item">
+          <label>Loss After Discount</label>
+          <span class="val" [ngClass]="batch.lossAfterDiscount > 0 ? 'text-danger' : 'text-success'">
+            {{ Math.abs(batch.lossAfterDiscount) | inr }} {{ batch.lossAfterDiscount > 0 ? 'Loss' : 'Profit' }}
           </span>
-        </td>
-        <td>{{ batch.initialQuantity }}</td>
-        <td><span class="remaining-count" [attr.data-status]="batch.stockStatus">{{ batch.remainingQuantity }}</span></td>
-        <td class="profit-text gross">{{ batch.grossProfit | inr }}</td>
-        <td class="profit-text net" [class.text-danger]="batch.netProfit < 0">{{ batch.netProfit | inr }}</td>
-        <td>{{ batch.investment | inr }}</td>
-        <td><span [class.text-danger]="batch.potentialLoss > 0">{{ batch.potentialLoss | inr }}</span></td>
-        <td>
-          <span class="status-badge" [attr.data-status]="batch.stockStatus">
-            {{ batch.stockStatus?.replace('_', ' ') || 'UNKNOWN' }}
-          </span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer" [class.negative]="batch.netProfit < 0">
+      <label>Net Profit</label>
+      <span class="net-val">{{ batch.netProfit | inr }}</span>
+    </div>
+  </div>
+</div>
   
   <div *ngIf="batches.length === 0" class="empty-state">
     <p>No inventory batches found. Add purchases to see data here.</p>
   </div>
-</div>

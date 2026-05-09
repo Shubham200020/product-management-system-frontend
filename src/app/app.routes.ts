@@ -14,6 +14,8 @@ import { ProfitReportComponent } from './pages/profit-report/profit-report.compo
 import { UserManagementComponent } from './pages/user-management/user-management.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { RestockComponent } from './pages/restock/restock.component';
+import { InsightsComponent } from './pages/insights/insights.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -35,6 +37,8 @@ export const routes: Routes = [
       { path: 'inventory-report', component: InventoryReportComponent },
       { path: 'product-catalog', component: ProductCatalogComponent },
       { path: 'profit-report', component: ProfitReportComponent },
+      { path: 'restock', component: RestockComponent },
+      { path: 'insights', component: InsightsComponent },
       { path: 'users', component: UserManagementComponent, data: { roles: ['ADMIN'] } },
  // Placeholder for User Management
       { path: 'sales', component: SalesComponent, data: { roles: ['ADMIN', 'SHOPKEEPER'] } }

@@ -1,26 +1,114 @@
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
 }
 
 .category-card {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-clickable {
   padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 12px;
-  transition: transform 0.2s;
   cursor: pointer;
+  width: 100%;
 }
 
 .category-card:hover {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .category-card .card-icon {
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 8px;
 }
+
+.shop-badge {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icon-btn.delete:hover {
+  background: rgba(255, 0, 0, 0.2);
+}
+
+/* Product List View Styles */
+.product-list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.view-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.products-table-container {
+  overflow-x: auto;
+  padding: 20px;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pill[data-status="IN_STOCK"] { background: rgba(0, 255, 0, 0.2); color: #4ade80; }
+.status-pill[data-status="LOW_STOCK"] { background: rgba(255, 165, 0, 0.2); color: #fbbf24; }
+.status-pill[data-status="OUT_OF_STOCK"] { background: rgba(255, 0, 0, 0.2); color: #f87171; }
+.status-pill[data-status="EXPIRED"] { background: rgba(128, 128, 128, 0.2); color: #9ca3af; }

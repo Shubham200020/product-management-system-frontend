@@ -1,0 +1,48 @@
+<div class="page-header">
+  <div>
+    <h1>Smart Restock Insights</h1>
+    <p>AI-driven recommendations based on your current inventory levels.</p>
+  </div>
+  <div class="stats-badge glass" *ngIf="recommendations.length > 0">
+    <span class="count">{{ recommendations.length }}</span> Items Need Attention
+  </div>
+</div>
+
+<div *ngIf="loading" class="loader-container">
+  <div class="loader large"></div>
+</div>
+
+<div *ngIf="!loading && recommendations.length > 0" class="recommendations-grid animate-fade-in">
+  <div *ngFor="let item of recommendations" class="recommendation-card glass card" [ngClass]="getUrgencyClass(item.urgency)">
+    <div class="urgency-ribbon">{{ item.urgency }} URGENCY</div>
+    
+    <div class="card-header">
+      <div class="product-info">
+        <h3>{{ item.productName }}</h3>
+        <span class="sku">SKU: {{ item.sku }}</span>
+      </div>
+      <div class="stock-status">
+        <span class="current-stock">{{ item.currentStock }}</span>
+        <span class="label">Units Left</span>
+      </div>
+    </div>
+
+    <div class="reason-box">
+      <span class="icon">💡</span>
+      <p>{{ item.reason }}</p>
+    </div>
+
+    <div class="card-actions">
+      <button class="btn btn-primary" routerLink="/dashboard/purchases">
+        <span class="icon">🛒</span> Restock Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading && recommendations.length === 0" class="empty-state glass animate-fade-in">
+  <div class="success-icon">✅</div>
+  <h2>All Good!</h2>
+  <p>Your inventory levels are optimal. No restock recommendations at this time.</p>
+  <button class="btn btn-secondary" routerLink="/dashboard/home">Back to Dashboard</button>
+</div>

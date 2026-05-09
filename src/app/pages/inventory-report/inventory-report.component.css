@@ -6,6 +6,58 @@
   margin-bottom: 32px;
   background: rgba(30, 41, 59, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.stat-badge {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.expiry-legend {
+  display: flex;
+  gap: 20px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.dot.red { color: #ef4444; background: #ef4444; }
+.dot.orange { color: #f59e0b; background: #f59e0b; }
+.dot.green { color: #10b981; background: #10b981; }
+
+.legend-item .label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .filter-group {
@@ -47,136 +99,275 @@
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
-.data-table th {
-  background: rgba(15, 23, 42, 0.4);
-  color: #94a3b8;
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.report-card {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.report-card:hover {
+  transform: translateY(-8px);
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.product-info .name {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.product-info .sku {
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  padding: 20px;
+  color: #94a3b8;
+  letter-spacing: 1px;
 }
 
-.data-table td {
+.card-body {
   padding: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.name {
+.info-row {
+  display: flex;
+  gap: 16px;
+}
+
+.info-row.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.info-row.grid-2 {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.info-item {
+  flex: 1;
+}
+
+.info-item label, .metric label, .fin-item label, .card-footer label, .price-item label {
+  display: block;
+  font-size: 0.6rem;
   font-weight: 700;
-  color: #f8fafc;
-  font-size: 1.05rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.info-item span, .date-text, .supplier-text {
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.supplier-text {
+  color: #818cf8;
+}
+
+.pricing-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.price-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.price-val.mrp {
+  color: #38bdf8;
+}
+
+.expiry-section {
+  background: rgba(15, 23, 42, 0.3);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.expiry-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.date-label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.metric .value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: white;
+}
+
+.metric .value.remaining {
+  color: #38bdf8;
+}
+
+.financials {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fin-item .val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.fin-item .val.profit {
+  color: #10b981;
+}
+
+.fin-item.highlight {
+  background: rgba(245, 158, 11, 0.1);
+  padding: 8px;
+  border-radius: 8px;
+  margin: 4px 0;
+}
+
+.discount-badge {
+  background: #f59e0b;
+  color: #0f172a !important;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 800 !important;
+  font-size: 0.8rem !important;
+}
+
+.text-danger { color: #ef4444 !important; }
+.text-success { color: #10b981 !important; }
+
+.fin-item.danger label, .fin-item.danger .val {
+  color: #ef4444;
+}
+
+.card-footer {
+  padding: 16px 20px;
+  background: rgba(16, 185, 129, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.card-footer.negative {
+  background: rgba(239, 68, 68, 0.05);
+  border-top-color: rgba(239, 68, 68, 0.1);
+}
+
+.card-footer .net-val {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #10b981;
+}
+
+.card-footer.negative .net-val {
+  color: #ef4444;
 }
 
 .badge {
   background: rgba(99, 102, 241, 0.15);
   color: #818cf8;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .status-badge {
-  padding: 6px 12px;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.status-badge[data-status="IN_STOCK"] {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.status-badge[data-status="LOW_STOCK"] {
-  background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.2);
-}
-
-.status-badge[data-status="OUT_OF_STOCK"] {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.status-badge[data-status="EXPIRED"] {
-  background: rgba(100, 116, 139, 0.1);
-  color: #94a3b8;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  text-decoration: line-through;
-}
-
-.remaining-count[data-status="OUT_OF_STOCK"],
-.remaining-count[data-status="EXPIRED"] {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.profit-text {
-  color: #10b981;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
   font-weight: 800;
-  font-family: 'Inter', sans-serif;
-}
-
-.remaining-count {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-weight: 700;
-  color: #38bdf8;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th, .data-table td {
-  padding: 16px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.data-table th {
-  color: var(--text-muted);
-  font-weight: 600;
-  font-size: 0.85rem;
   text-transform: uppercase;
 }
 
-.amount {
-  font-family: 'Courier New', Courier, monospace;
+.status-badge[data-status="IN_STOCK"] { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.status-badge[data-status="LOW_STOCK"] { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.status-badge[data-status="OUT_OF_STOCK"] { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.status-badge[data-status="EXPIRED"] { background: rgba(220, 38, 38, 0.15); color: #ef4444; }
+.status-badge[data-status="NEAR_EXPIRY"] { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+/* Expiry Visualization */
+.days-text {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
-.profit {
-  color: #10b981;
-  font-weight: 700;
+.days-text.expired { color: #ef4444; }
+.days-text.soon { color: #f59e0b; }
+.days-text.safe { color: #10b981; }
+
+.mini-progress {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
 }
 
-.expired {
-  color: #ef4444;
-  text-decoration: underline;
+.mini-progress .fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
 }
 
-.stock-badge {
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  font-weight: 700;
-}
-
-.stock-badge.low {
-  background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
-}
+.mini-progress .fill.expired { background: #ef4444; }
+.mini-progress .fill.soon { background: #f59e0b; }
+.mini-progress .fill.safe { background: #10b981; }
 
 /* Summary Cards */
 .summary-cards {
@@ -223,3 +414,9 @@
 .summary-card.gross { border-left: 4px solid #10b981; }
 .summary-card.net { border-left: 4px solid #22d3ee; }
 .summary-card.net.negative .card-value { color: #ef4444; }
+
+.text-muted {
+  color: #64748b;
+  font-style: italic;
+  font-size: 0.8rem;
+}
