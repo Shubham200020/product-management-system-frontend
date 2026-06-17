@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Product {
   id?: number;
@@ -29,7 +30,7 @@ export interface Product {
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:8080/api/products';
+  private apiUrl = `${environment.apiUrl}/products`;
 
   constructor(private http: HttpClient) {}
 
@@ -62,15 +63,15 @@ export class ProductService {
   }
 
   getRestockRecommendations(): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/recommendations/restock`, { withCredentials: true });
+    return this.http.get<any[]>(`${environment.apiUrl}/recommendations/restock`, { withCredentials: true });
   }
 
   getDiscountRecommendations(): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/recommendations/discounts`, { withCredentials: true });
+    return this.http.get<any[]>(`${environment.apiUrl}/recommendations/discounts`, { withCredentials: true });
   }
 
   getStockHealthSummary(): Observable<any> {
-    return this.http.get<any>(`http://localhost:8080/api/recommendations/summary`, { withCredentials: true });
+    return this.http.get<any>(`${environment.apiUrl}/recommendations/summary`, { withCredentials: true });
   }
 
   applyDiscount(productId: number, discountPercent: number): Observable<any> {

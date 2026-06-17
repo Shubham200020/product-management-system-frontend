@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, timer } from 'rxjs';
 import { switchMap, shareReplay, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface SystemStatus {
   databaseConnected: boolean;
@@ -17,7 +18,7 @@ export interface SystemStatus {
   providedIn: 'root'
 })
 export class StatusService {
-  private apiUrl = 'http://localhost:8080/api/system/status';
+  private apiUrl = `${environment.apiUrl}/system/status`;
 
   // Polling every 30 seconds
   private status$ = timer(0, 30000).pipe(
