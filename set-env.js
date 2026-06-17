@@ -5,7 +5,7 @@ const targetPath = path.join(__dirname, 'src', 'environments', 'environment.prod
 
 const envConfigFile = `export const environment = {
   production: true,
-  apiUrl: '${process.env.API_URL || "https://product-management-backend.onrender.com/api"}'
+  apiUrl: '${process.env.API_URL || "https://product-management-backend-u76w.onrender.com/api"}'
 };
 `;
 
