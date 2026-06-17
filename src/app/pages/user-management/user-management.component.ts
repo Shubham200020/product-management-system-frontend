@@ -4,6 +4,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-user-management',
@@ -19,7 +20,7 @@ export class UserManagementComponent implements OnInit {
   newAdmin = { name: '', email: '', password: '', phone: '' };
   currentUserEmail = '';
 
-  private apiUrl = 'http://localhost:8080/api/users';
+  private apiUrl = `${environment.apiUrl}/users`;
 
   constructor(
     private http: HttpClient, 
