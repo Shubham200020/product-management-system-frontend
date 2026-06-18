@@ -17,11 +17,12 @@ import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password
 import { RestockComponent } from './pages/restock/restock.component';
 import { InsightsComponent } from './pages/insights/insights.component';
 import { authGuard } from './guards/auth.guard';
+import { guestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
+  { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [guestGuard] },
   { 
     path: 'dashboard', 
     component: DashboardComponent,
