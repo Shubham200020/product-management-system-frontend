@@ -12,18 +12,35 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  private isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  }
+
+  clearLocalSession(): void {
+    if (this.isBrowser()) {
+      localStorage.removeItem('user-info');
+    }
+  }
+
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials, { withCredentials: true });
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
+      tap(res => {
+        if (res && res.name && res.role && this.isBrowser()) {
+          const userInfo = encodeURIComponent(`${res.name}:${res.role}`);
+          localStorage.setItem('user-info', userInfo);
+        }
+      })
+    );
   }
 
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
-        // Clear local session info if any
+        this.clearLocalSession();
         this.router.navigate(['/login']);
       })
     );
@@ -31,11 +48,19 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     const userInfo = this.getCookie('user-info');
-    return !!userInfo;
+    if (userInfo) return true;
+
+    if (this.isBrowser()) {
+      return !!localStorage.getItem('user-info');
+    }
+    return false;
   }
 
   getUserName(): string {
-    const userInfo = this.getCookie('user-info');
+    let userInfo = this.getCookie('user-info');
+    if (!userInfo && this.isBrowser()) {
+      userInfo = localStorage.getItem('user-info');
+    }
     if (userInfo) {
       const decoded = decodeURIComponent(userInfo).replace(/\+/g, ' ');
       return decoded.split(':')[0];
@@ -44,7 +69,10 @@ export class AuthService {
   }
 
   getRole(): string {
-    const userInfo = this.getCookie('user-info');
+    let userInfo = this.getCookie('user-info');
+    if (!userInfo && this.isBrowser()) {
+      userInfo = localStorage.getItem('user-info');
+    }
     if (userInfo) {
       const decoded = decodeURIComponent(userInfo).replace(/\+/g, ' ');
       return decoded.split(':')[1];
