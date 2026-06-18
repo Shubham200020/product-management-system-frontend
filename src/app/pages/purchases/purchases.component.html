@@ -14,7 +14,7 @@
     <div class="form-header-row">
       <div class="input-group">
         <label>Shop</label>
-        <select name="shopId" [(ngModel)]="currentPurchase.shopId" required>
+        <select name="shopId" [(ngModel)]="currentPurchase.shopId" (ngModelChange)="onShopChange()" required>
           <option [ngValue]="0">Select Shop</option>
           <option *ngFor="let shop of shops" [ngValue]="shop.id">{{ shop.name }}</option>
         </select>
@@ -28,14 +28,14 @@
     <div class="items-section">
       <div class="section-header">
         <h3>Purchase Items</h3>
-        <button type="button" class="btn btn-secondary btn-sm" (click)="addItem()">+ Add Item</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="addItem()" [disabled]="currentPurchase.shopId === 0">+ Add Item</button>
       </div>
 
       <div class="items-list">
         <div *ngFor="let item of currentPurchase.items; let i = index" class="item-row glass animate-slide-in">
           <div class="input-group">
             <label>Product</label>
-            <select [name]="'product-' + i" [(ngModel)]="item.productId" (ngModelChange)="onProductChange(i)" required>
+            <select [name]="'product-' + i" [(ngModel)]="item.productId" (ngModelChange)="onProductChange(i)" [disabled]="currentPurchase.shopId === 0" required>
               <option [ngValue]="0">Select Product</option>
               <option *ngFor="let p of products" [ngValue]="p.id">{{ p.name }} ({{ p.sku }})</option>
             </select>

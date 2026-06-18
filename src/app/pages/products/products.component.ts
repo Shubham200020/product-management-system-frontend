@@ -16,6 +16,7 @@ import { InrPipe } from '../../pipes/inr.pipe';
 export class ProductsComponent implements OnInit {
   products: Product[] = [];
   categories: Category[] = [];
+  allCategories: Category[] = [];
   shops: Shop[] = [];
   loading = true;
   showForm = false;
@@ -61,8 +62,23 @@ export class ProductsComponent implements OnInit {
   }
 
   loadMetadata() {
-    this.categoryService.getCategories().subscribe(data => this.categories = data);
+    this.categoryService.getCategories().subscribe(data => {
+      this.allCategories = data;
+      this.onShopChange();
+    });
     this.shopService.getShops().subscribe(data => this.shops = data);
+  }
+
+  onShopChange() {
+    if (this.currentProduct.shop) {
+      this.categories = this.allCategories.filter(cat => cat.shop && cat.shop.id === this.currentProduct.shop.id);
+      if (this.currentProduct.category && this.currentProduct.category.shop && this.currentProduct.category.shop.id !== this.currentProduct.shop.id) {
+        this.currentProduct.category = null;
+      }
+    } else {
+      this.categories = [];
+      this.currentProduct.category = null;
+    }
   }
 
   toggleForm() {
@@ -70,6 +86,7 @@ export class ProductsComponent implements OnInit {
     if (!this.showForm) {
       this.isEditing = false;
       this.currentProduct = this.resetProduct();
+      this.categories = [];
     }
   }
 
@@ -77,6 +94,7 @@ export class ProductsComponent implements OnInit {
     this.currentProduct = { ...product };
     this.isEditing = true;
     this.showForm = true;
+    this.onShopChange();
   }
 
   deleteProduct(id: number | undefined) {

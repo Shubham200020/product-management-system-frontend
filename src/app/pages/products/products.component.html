@@ -28,17 +28,19 @@
         </select>
       </div>
       <div class="input-group">
-        <label>Category</label>
-        <select name="category" [(ngModel)]="currentProduct.category">
-          <option [ngValue]="null">Select Category</option>
-          <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
+        <label>Shop</label>
+        <select name="shop" [(ngModel)]="currentProduct.shop" (ngModelChange)="onShopChange()">
+          <option [ngValue]="null">Select Shop</option>
+          <option *ngFor="let shop of shops" [ngValue]="shop">{{ shop.name }}</option>
         </select>
       </div>
       <div class="input-group">
-        <label>Shop</label>
-        <select name="shop" [(ngModel)]="currentProduct.shop">
-          <option [ngValue]="null">Select Shop</option>
-          <option *ngFor="let shop of shops" [ngValue]="shop">{{ shop.name }}</option>
+        <label>Category</label>
+        <select name="category" [(ngModel)]="currentProduct.category" [disabled]="!currentProduct.shop">
+          <option [ngValue]="null">
+            {{ currentProduct.shop ? 'Select Category' : 'Please Select a Shop First' }}
+          </option>
+          <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.name }}</option>
         </select>
       </div>
       <div class="input-group">

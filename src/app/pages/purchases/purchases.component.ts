@@ -16,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class PurchasesComponent implements OnInit {
   products: Product[] = [];
+  allProducts: Product[] = [];
   shops: Shop[] = [];
   purchases: any[] = [];
   
@@ -42,6 +43,12 @@ export class PurchasesComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const restockId = params['restockProductId'];
       if (restockId) {
+        // Pre-select the shop of the restocked product
+        const product = this.allProducts.find(p => p.id === +restockId);
+        if (product && product.shop) {
+          this.currentPurchase.shopId = product.shop.id;
+          this.filterProductsByShop();
+        }
         this.showForm = true;
         this.addItem();
         const lastIndex = this.currentPurchase.items.length - 1;
@@ -73,8 +80,24 @@ export class PurchasesComponent implements OnInit {
   }
 
   loadData() {
-    this.productService.getProducts().subscribe(data => this.products = data);
+    this.productService.getProducts().subscribe(data => {
+      this.allProducts = data;
+      this.filterProductsByShop();
+    });
     this.shopService.getShops().subscribe(data => this.shops = data);
+  }
+
+  onShopChange() {
+    this.currentPurchase.items = []; // Clear items to prevent products from different shops in the same purchase
+    this.filterProductsByShop();
+  }
+
+  filterProductsByShop() {
+    if (this.currentPurchase.shopId) {
+      this.products = this.allProducts.filter(p => p.shop && p.shop.id === this.currentPurchase.shopId);
+    } else {
+      this.products = [];
+    }
   }
 
   loadPurchases() {
