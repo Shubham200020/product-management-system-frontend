@@ -166,10 +166,13 @@
           <span class="label">Switch View</span>
           <div class="toggle-buttons">
             <button class="toggle-btn" [class.active]="historyViewMode === 'list'" (click)="setHistoryViewMode('list')">
-              📋 List Table
+              📋 Table
             </button>
-            <button class="toggle-btn" [class.active]="historyViewMode === 'chart'" (click)="setHistoryViewMode('chart')">
-              📊 Sales Graph
+            <button class="toggle-btn" [class.active]="historyViewMode === 'bar'" (click)="setHistoryViewMode('bar')">
+              📊 Bar Chart
+            </button>
+            <button class="toggle-btn" [class.active]="historyViewMode === 'pie'" (click)="setHistoryViewMode('pie')">
+              🥧 Pie Chart
             </button>
           </div>
         </div>
@@ -258,8 +261,8 @@
       </div>
     </div>
 
-    <!-- Graph View Mode -->
-    <div *ngIf="!loading && historyViewMode === 'chart'" class="sales-chart-container glass card animate-fade-in">
+    <!-- Bar Graph View Mode -->
+    <div *ngIf="!loading && historyViewMode === 'bar'" class="sales-chart-container glass card animate-fade-in">
       <div class="chart-header">
         <h3>📊 Top Selling Products</h3>
         <p class="chart-subtitle">Relative sales volume based on all historical transactions</p>
@@ -282,6 +285,43 @@
       
       <div *ngIf="topSellingProducts.length === 0" class="empty-state">
         <p>No sales data available to build graph.</p>
+      </div>
+    </div>
+
+    <!-- Pie Chart View Mode -->
+    <div *ngIf="!loading && historyViewMode === 'pie'" class="sales-chart-container glass card animate-fade-in">
+      <div class="chart-header">
+        <h3>🥧 Sales Distribution (Doughnut)</h3>
+        <p class="chart-subtitle">Percentage breakdown of top-selling products by quantity sold</p>
+      </div>
+
+      <div class="pie-chart-layout" *ngIf="topSellingProducts.length > 0">
+        <!-- Doughnut Graphic -->
+        <div class="doughnut-chart-wrapper">
+          <div class="doughnut-chart" [style.background]="pieChartGradient">
+            <div class="doughnut-hole">
+              <span class="total-label">Total Units</span>
+              <span class="total-value">{{ totalQtySold }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="chart-legend">
+          <div *ngFor="let slice of pieChartSlices" class="legend-item animate-slide-in">
+            <div class="legend-color-dot" [style.background-color]="slice.color"></div>
+            <div class="legend-info">
+              <span class="legend-name font-bold">{{ slice.name }}</span>
+              <span class="legend-stats">
+                {{ slice.quantity }} sold <span class="legend-percent">({{ slice.percentage }}%)</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="topSellingProducts.length === 0" class="empty-state">
+        <p>No sales data available to build chart.</p>
       </div>
     </div>
   </div>

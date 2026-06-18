@@ -31,7 +31,7 @@ export class SalesComponent implements OnInit {
   expandedSaleId: number | null = null;
 
   // Filters and View Modes for Sales History
-  historyViewMode: 'list' | 'chart' = 'list';
+  historyViewMode: 'list' | 'bar' | 'pie' = 'list';
   filterProductName: string = '';
   filterDate: string = '';
 
@@ -89,7 +89,7 @@ export class SalesComponent implements OnInit {
     });
   }
 
-  setHistoryViewMode(mode: 'list' | 'chart') {
+  setHistoryViewMode(mode: 'list' | 'bar' | 'pie') {
     this.historyViewMode = mode;
   }
 
@@ -184,6 +184,58 @@ export class SalesComponent implements OnInit {
       ...p,
       percentage: Math.round((p.quantity / maxQty) * 100)
     }));
+  }
+
+  getChartColor(index: number): string {
+    const colors = [
+      '#10b981', // emerald
+      '#6366f1', // indigo
+      '#ec4899', // pink
+      '#f59e0b', // amber
+      '#3b82f6', // blue
+      '#8b5cf6', // purple
+      '#ef4444', // red
+      '#14b8a6', // teal
+      '#f97316', // orange
+      '#06b6d4'  // cyan
+    ];
+    return colors[index % colors.length];
+  }
+
+  get pieChartSlices() {
+    const topProducts = this.topSellingProducts;
+    const totalQty = topProducts.reduce((sum, p) => sum + p.quantity, 0);
+    
+    if (totalQty === 0) return [];
+    
+    let accumulated = 0;
+    return topProducts.map((p, index) => {
+      const percentage = Math.round((p.quantity / totalQty) * 100);
+      const start = accumulated;
+      accumulated += percentage;
+      const end = index === topProducts.length - 1 ? 100 : accumulated;
+      
+      return {
+        name: p.name,
+        quantity: p.quantity,
+        percentage,
+        color: this.getChartColor(index),
+        start,
+        end
+      };
+    });
+  }
+
+  get pieChartGradient(): string {
+    const slices = this.pieChartSlices;
+    if (slices.length === 0) return 'rgba(255, 255, 255, 0.05)';
+    
+    const parts = slices.map(s => `${s.color} ${s.start}% ${s.end}%`);
+    return `conic-gradient(${parts.join(', ')})`;
+  }
+
+  get totalQtySold(): number {
+    return this.topSellingProducts.reduce((sum, p) => sum + p.quantity, 0);
   }
 
   switchTab(tab: 'new' | 'history') {

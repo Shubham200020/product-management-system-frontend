@@ -1093,3 +1093,128 @@
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
+
+/* Pie / Doughnut Chart styles */
+.pie-chart-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding: 20px 0;
+}
+
+.doughnut-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.doughnut-chart {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.doughnut-chart:hover {
+  transform: scale(1.03);
+}
+
+.doughnut-hole {
+  width: 140px;
+  height: 140px;
+  background: #0b0c15; /* matches the dark theme dashboard background */
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.doughnut-hole .total-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.doughnut-hole .total-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: white;
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-width: 250px;
+  max-width: 450px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.legend-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.07);
+  transform: translateX(4px);
+}
+
+.legend-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 0.92rem;
+}
+
+.legend-name {
+  color: white;
+}
+
+.legend-stats {
+  color: var(--text-muted);
+}
+
+.legend-percent {
+  color: #10b981;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+@media (max-width: 640px) {
+  .pie-chart-layout {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .chart-legend {
+    width: 100%;
+  }
+}
