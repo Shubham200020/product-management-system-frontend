@@ -26,7 +26,15 @@ export class LoginComponent {
   onSubmit() {
     this.loading = true;
     this.error = '';
-    this.authService.login(this.credentials).subscribe({
+    
+    const credentialsToSubmit = {
+      ...this.credentials,
+      identifier: this.credentials.identifier.includes('@')
+        ? this.credentials.identifier.toLowerCase().trim()
+        : this.credentials.identifier.trim()
+    };
+
+    this.authService.login(credentialsToSubmit).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);
       },

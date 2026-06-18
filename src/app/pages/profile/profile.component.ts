@@ -108,7 +108,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onEmailChange(email: string) {
-    this.emailSubject.next(email);
+    this.emailSubject.next(email ? email.trim().toLowerCase() : '');
   }
 
   onPhoneChange(phone: string) {
@@ -146,7 +146,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.successMessage = '';
     this.errorMessage = '';
 
-    this.userService.updateMyProfile(this.user).subscribe({
+    const userToSubmit = {
+      ...this.user,
+      email: this.user.email ? this.user.email.trim().toLowerCase() : ''
+    };
+
+    this.userService.updateMyProfile(userToSubmit).subscribe({
       next: (updatedUser) => {
         this.user = { ...updatedUser, password: '' }; // Clear password field
         this.confirmPassword = ''; // Clear confirm password

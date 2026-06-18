@@ -32,7 +32,13 @@ export class RegisterComponent {
   onSubmit() {
     this.loading = true;
     this.error = '';
-    this.authService.register(this.userData).subscribe({
+
+    const userDataToSubmit = {
+      ...this.userData,
+      email: this.userData.email ? this.userData.email.toLowerCase().trim() : ''
+    };
+
+    this.authService.register(userDataToSubmit).subscribe({
       next: () => {
         this.router.navigate(['/login']);
       },

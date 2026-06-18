@@ -39,7 +39,12 @@ export class ForgotPasswordComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.http.post(this.apiUrl, this.request).subscribe({
+    const requestToSubmit = {
+      ...this.request,
+      email: this.request.email ? this.request.email.toLowerCase().trim() : ''
+    };
+
+    this.http.post(this.apiUrl, requestToSubmit).subscribe({
       next: (res: any) => {
         this.successMessage = res.message;
         this.loading = false;

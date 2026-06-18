@@ -60,7 +60,11 @@ export class UserManagementComponent implements OnInit {
   }
 
   createAdmin() {
-    this.http.post(`${this.apiUrl}/admin`, this.newAdmin, { withCredentials: true }).subscribe({
+    const adminToSubmit = {
+      ...this.newAdmin,
+      email: this.newAdmin.email ? this.newAdmin.email.toLowerCase().trim() : ''
+    };
+    this.http.post(`${this.apiUrl}/admin`, adminToSubmit, { withCredentials: true }).subscribe({
       next: () => {
         alert('Admin created successfully!');
         this.showAdminForm = false;
