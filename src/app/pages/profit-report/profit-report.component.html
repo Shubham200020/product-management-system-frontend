@@ -62,7 +62,26 @@
   </div>
 </div>
 
-<div *ngIf="!loading" class="report-container glass card animate-slide-up">
+<!-- View Switcher -->
+<div *ngIf="!loading" class="report-view-toggle-bar animate-slide-up">
+  <div class="view-toggle-card glass">
+    <span class="label">Select View Mode:</span>
+    <div class="toggle-buttons">
+      <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')">
+        📋 Report Table
+      </button>
+      <button class="toggle-btn" [class.active]="viewMode === 'bar'" (click)="setViewMode('bar')">
+        📊 Product Profit Bar
+      </button>
+      <button class="toggle-btn" [class.active]="viewMode === 'pie'" (click)="setViewMode('pie')">
+        🥧 Category Profit Pie
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Table View -->
+<div *ngIf="!loading && viewMode === 'table'" class="report-container glass card animate-slide-up">
   <table class="data-table">
     <thead>
       <tr>
@@ -88,5 +107,71 @@
   
   <div *ngIf="filteredBatches.length === 0" class="empty-state">
     <p>No profitability data available for the current filters.</p>
+  </div>
+</div>
+
+<!-- Bar Graph View -->
+<div *ngIf="!loading && viewMode === 'bar'" class="report-chart-container glass card animate-fade-in">
+  <div class="chart-header">
+    <h3>📊 Net Profit per Product</h3>
+    <p class="chart-subtitle">Top 10 products sorted by net profit margins</p>
+  </div>
+  
+  <div class="chart-bars" *ngIf="topProductsByProfit.length > 0">
+    <div *ngFor="let item of topProductsByProfit" class="chart-bar-row">
+      <div class="chart-bar-info">
+        <span class="product-name font-bold">{{ item.name }}</span>
+        <span class="product-stats">
+          <span class="profit-val" [style.color]="item.netProfit >= 0 ? '#10b981' : '#f87171'">
+            Net: {{ item.netProfit | inr }}
+          </span>
+          <span class="gross-val">Gross: {{ item.grossProfit | inr }}</span>
+        </span>
+      </div>
+      <div class="chart-bar-container">
+        <div class="chart-bar-fill" [style.width.%]="item.percentage"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="topProductsByProfit.length === 0" class="empty-state">
+    <p>No profitability data available to build graph.</p>
+  </div>
+</div>
+
+<!-- Pie Chart View -->
+<div *ngIf="!loading && viewMode === 'pie'" class="report-chart-container glass card animate-fade-in">
+  <div class="chart-header">
+    <h3>🥧 Category Profit Share</h3>
+    <p class="chart-subtitle">Percentage share of total profits grouped by product categories</p>
+  </div>
+
+  <div class="pie-chart-layout" *ngIf="profitByCategory.length > 0">
+    <!-- Doughnut Graphic -->
+    <div class="doughnut-chart-wrapper">
+      <div class="doughnut-chart" [style.background]="categoryPieGradient">
+        <div class="doughnut-hole">
+          <span class="total-label">Net Profit</span>
+          <span class="total-value">{{ totalNetProfit | inr }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="chart-legend">
+      <div *ngFor="let slice of profitByCategory" class="legend-item animate-slide-in">
+        <div class="legend-color-dot" [style.background-color]="slice.color"></div>
+        <div class="legend-info">
+          <span class="legend-name font-bold">{{ slice.name }}</span>
+          <span class="legend-stats">
+            {{ slice.profit | inr }} <span class="legend-percent">({{ slice.percentage }}%)</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="profitByCategory.length === 0" class="empty-state">
+    <p>No categories with positive profit available to build chart.</p>
   </div>
 </div>

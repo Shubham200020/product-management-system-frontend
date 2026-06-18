@@ -32,6 +32,9 @@ export class ProfitReportComponent implements OnInit {
   totalInvestment = 0;
   totalPotentialLoss = 0;
 
+  // View modes
+  viewMode: 'table' | 'bar' | 'pie' = 'table';
+
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
@@ -77,5 +80,97 @@ export class ProfitReportComponent implements OnInit {
     this.totalNetProfit = this.filteredBatches.reduce((sum, b) => sum + (b.netProfit || 0), 0);
     this.totalInvestment = this.filteredBatches.reduce((sum, b) => sum + (b.investment || 0), 0);
     this.totalPotentialLoss = this.filteredBatches.reduce((sum, b) => sum + (b.potentialLoss || 0), 0);
+  }
+
+  setViewMode(mode: 'table' | 'bar' | 'pie') {
+    this.viewMode = mode;
+  }
+
+  get topProductsByProfit() {
+    const map = new Map<string, { netProfit: number; grossProfit: number }>();
+    
+    this.filteredBatches.forEach(b => {
+      const name = b.productName || 'Unknown';
+      const existing = map.get(name) || { netProfit: 0, grossProfit: 0 };
+      map.set(name, {
+        netProfit: existing.netProfit + (b.netProfit || 0),
+        grossProfit: existing.grossProfit + (b.grossProfit || 0)
+      });
+    });
+    
+    const list = Array.from(map.entries()).map(([name, stats]) => ({
+      name,
+      netProfit: stats.netProfit,
+      grossProfit: stats.grossProfit
+    }));
+    
+    // Sort by Net Profit descending
+    list.sort((a, b) => b.netProfit - a.netProfit);
+    
+    const topList = list.slice(0, 10);
+    const maxProfit = topList.reduce((max, item) => item.netProfit > max ? item.netProfit : max, 1);
+    
+    return topList.map(item => ({
+      ...item,
+      percentage: Math.max(0, Math.round((item.netProfit / maxProfit) * 100))
+    }));
+  }
+
+  get profitByCategory() {
+    const map = new Map<string, number>();
+    
+    this.filteredBatches.forEach(b => {
+      const name = b.categoryName || 'Uncategorized';
+      map.set(name, (map.get(name) || 0) + (b.netProfit || 0));
+    });
+    
+    const list = Array.from(map.entries()).map(([name, profit]) => ({
+      name,
+      profit: Math.max(0, profit) // Only positive profits for pie chart
+    }));
+    
+    const totalProfit = list.reduce((sum, item) => sum + item.profit, 0);
+    if (totalProfit === 0) return [];
+    
+    let accumulated = 0;
+    const slices = list.map((item, index) => {
+      const percentage = Math.round((item.profit / totalProfit) * 100);
+      const start = accumulated;
+      accumulated += percentage;
+      const end = index === list.length - 1 ? 100 : accumulated;
+      return {
+        name: item.name,
+        profit: item.profit,
+        percentage,
+        color: this.getChartColor(index),
+        start,
+        end
+      };
+    });
+    
+    return slices;
+  }
+
+  get categoryPieGradient(): string {
+    const slices = this.profitByCategory;
+    if (slices.length === 0) return 'rgba(255, 255, 255, 0.05)';
+    const parts = slices.map(s => `${s.color} ${s.start}% ${s.end}%`);
+    return `conic-gradient(${parts.join(', ')})`;
+  }
+
+  getChartColor(index: number): string {
+    const colors = [
+      '#10b981', // emerald
+      '#6366f1', // indigo
+      '#ec4899', // pink
+      '#f59e0b', // amber
+      '#3b82f6', // blue
+      '#8b5cf6', // purple
+      '#ef4444', // red
+      '#14b8a6', // teal
+      '#f97316', // orange
+      '#06b6d4'  // cyan
+    ];
+    return colors[index % colors.length];
   }
 }
