@@ -169,10 +169,13 @@
               📋 Table
             </button>
             <button class="toggle-btn" [class.active]="historyViewMode === 'bar'" (click)="setHistoryViewMode('bar')">
-              📊 Bar Chart
+              📊 Bar
             </button>
             <button class="toggle-btn" [class.active]="historyViewMode === 'pie'" (click)="setHistoryViewMode('pie')">
-              🥧 Pie Chart
+              🥧 Pie
+            </button>
+            <button class="toggle-btn" [class.active]="historyViewMode === 'trend'" (click)="setHistoryViewMode('trend')">
+              📈 Profit
             </button>
           </div>
         </div>
@@ -322,6 +325,29 @@
 
       <div *ngIf="topSellingProducts.length === 0" class="empty-state">
         <p>No sales data available to build chart.</p>
+      </div>
+    </div>
+
+    <!-- Profit Trend View Mode -->
+    <div *ngIf="!loading && historyViewMode === 'trend'" class="sales-chart-container glass card animate-fade-in">
+      <div class="chart-header">
+        <h3>📈 Daily Profit Trend</h3>
+        <p class="chart-subtitle">Daywise comparison of cumulative profits generated</p>
+      </div>
+
+      <div class="profit-trend-chart-layout" *ngIf="profitTrendData.length > 0">
+        <!-- Vertical Bar Chart -->
+        <div class="chart-bars-vertical">
+          <div *ngFor="let item of profitTrendData" class="vertical-bar-container">
+            <div class="bar-value-tooltip">{{ item.profit | inr }}</div>
+            <div class="vertical-bar-fill" [style.height.%]="item.percentage"></div>
+            <div class="bar-date-label">{{ item.formattedDate }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="profitTrendData.length === 0" class="empty-state">
+        <p>No sales data available to build trend chart.</p>
       </div>
     </div>
   </div>

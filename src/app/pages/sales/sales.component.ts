@@ -31,7 +31,7 @@ export class SalesComponent implements OnInit {
   expandedSaleId: number | null = null;
 
   // Filters and View Modes for Sales History
-  historyViewMode: 'list' | 'bar' | 'pie' = 'list';
+  historyViewMode: 'list' | 'bar' | 'pie' | 'trend' = 'list';
   filterProductName: string = '';
   filterDate: string = '';
 
@@ -89,7 +89,7 @@ export class SalesComponent implements OnInit {
     });
   }
 
-  setHistoryViewMode(mode: 'list' | 'bar' | 'pie') {
+  setHistoryViewMode(mode: 'list' | 'bar' | 'pie' | 'trend') {
     this.historyViewMode = mode;
   }
 
@@ -236,6 +236,42 @@ export class SalesComponent implements OnInit {
 
   get totalQtySold(): number {
     return this.topSellingProducts.reduce((sum, p) => sum + p.quantity, 0);
+  }
+
+  get profitTrendData() {
+    const profitMap = new Map<string, number>();
+    
+    this.salesHistory.forEach(sale => {
+      const dateStr = sale.createdAt ? sale.createdAt.substring(0, 10) : 'Unknown';
+      const profit = sale.totalProfit || 0;
+      profitMap.set(dateStr, (profitMap.get(dateStr) || 0) + profit);
+    });
+    
+    const profitArray = Array.from(profitMap.entries()).map(([date, profit]) => ({
+      date,
+      formattedDate: this.formatDateLabel(date),
+      profit
+    }));
+    
+    // Sort chronologically (oldest first)
+    profitArray.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    const maxProfit = profitArray.reduce((max, p) => p.profit > max ? p.profit : max, 1);
+    
+    return profitArray.map(p => ({
+      ...p,
+      percentage: Math.max(5, Math.round((p.profit / maxProfit) * 100))
+    }));
+  }
+
+  formatDateLabel(dateStr: string): string {
+    if (dateStr === 'Unknown') return 'Unknown';
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
   }
 
   switchTab(tab: 'new' | 'history') {
