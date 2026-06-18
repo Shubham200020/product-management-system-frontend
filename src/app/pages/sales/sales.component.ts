@@ -30,6 +30,11 @@ export class SalesComponent implements OnInit {
   submitting = false;
   expandedSaleId: number | null = null;
 
+  // Filters and View Modes for Sales History
+  historyViewMode: 'list' | 'chart' = 'list';
+  filterProductName: string = '';
+  filterDate: string = '';
+
   constructor(
     private salesService: SalesService,
     private productService: ProductService,
@@ -73,7 +78,8 @@ export class SalesComponent implements OnInit {
     this.loading = true;
     this.salesService.getSales().subscribe({
       next: (data) => {
-        this.salesHistory = data;
+        // Sort latest sales first
+        this.salesHistory = (data || []).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         this.loading = false;
       },
       error: (err) => {
@@ -81,6 +87,103 @@ export class SalesComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  setHistoryViewMode(mode: 'list' | 'chart') {
+    this.historyViewMode = mode;
+  }
+
+  setFilterToday() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    this.filterDate = `${yyyy}-${mm}-${dd}`;
+  }
+
+  clearFilters() {
+    this.filterProductName = '';
+    this.filterDate = '';
+  }
+
+  get todaysSalesCount(): number {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    return this.salesHistory.filter(s => {
+      const saleDate = s.createdAt ? s.createdAt.substring(0, 10) : '';
+      return saleDate === todayStr;
+    }).length;
+  }
+
+  get todaysSalesAmount(): number {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    return this.salesHistory
+      .filter(s => {
+        const saleDate = s.createdAt ? s.createdAt.substring(0, 10) : '';
+        return saleDate === todayStr;
+      })
+      .reduce((sum, s) => sum + (s.totalAmount || 0), 0);
+  }
+
+  get filteredSalesHistory(): SalesInvoice[] {
+    return this.salesHistory.filter(sale => {
+      const searchProd = this.filterProductName.toLowerCase().trim();
+      const matchesProduct = !searchProd || (sale.salesItems && sale.salesItems.some(item => 
+        item.product?.name?.toLowerCase().includes(searchProd)
+      ));
+
+      let matchesDate = true;
+      if (this.filterDate) {
+        const saleDate = sale.createdAt ? sale.createdAt.substring(0, 10) : '';
+        matchesDate = (saleDate === this.filterDate);
+      }
+
+      return matchesProduct && matchesDate;
+    });
+  }
+
+  get topSellingProducts() {
+    const productSalesMap = new Map<string, { quantity: number; revenue: number }>();
+    
+    this.salesHistory.forEach(sale => {
+      if (sale.salesItems) {
+        sale.salesItems.forEach(item => {
+          const name = item.product?.name || 'Unknown Product';
+          const qty = item.quantity || 0;
+          const rev = (item.sellingPrice || 0) * qty;
+          
+          const existing = productSalesMap.get(name) || { quantity: 0, revenue: 0 };
+          productSalesMap.set(name, {
+            quantity: existing.quantity + qty,
+            revenue: existing.revenue + rev
+          });
+        });
+      }
+    });
+    
+    const productSalesArray = Array.from(productSalesMap.entries()).map(([name, stats]) => ({
+      name,
+      quantity: stats.quantity,
+      revenue: stats.revenue
+    }));
+    
+    productSalesArray.sort((a, b) => b.quantity - a.quantity);
+    const topProducts = productSalesArray.slice(0, 10);
+    const maxQty = topProducts.reduce((max, p) => p.quantity > max ? p.quantity : max, 1);
+    
+    return topProducts.map(p => ({
+      ...p,
+      percentage: Math.round((p.quantity / maxQty) * 100)
+    }));
   }
 
   switchTab(tab: 'new' | 'history') {

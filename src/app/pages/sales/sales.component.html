@@ -143,11 +143,63 @@
       <p>View and track all past transactions</p>
     </div>
 
+    <!-- Summary & Filtering Controls -->
+    <div class="history-controls-section animate-slide-up">
+      <!-- Summary Cards -->
+      <div class="summary-cards-row">
+        <div class="summary-stat-card glass">
+          <div class="stat-icon-mini">💰</div>
+          <div class="stat-info">
+            <span class="label">Today's Revenue</span>
+            <span class="value">{{ todaysSalesAmount | inr }}</span>
+          </div>
+        </div>
+        <div class="summary-stat-card glass">
+          <div class="stat-icon-mini">📈</div>
+          <div class="stat-info">
+            <span class="label">Today's Transactions</span>
+            <span class="value">{{ todaysSalesCount }} {{ todaysSalesCount === 1 ? 'sale' : 'sales' }}</span>
+          </div>
+        </div>
+        <!-- Toggle View Mode Button -->
+        <div class="view-toggle-card glass">
+          <span class="label">Switch View</span>
+          <div class="toggle-buttons">
+            <button class="toggle-btn" [class.active]="historyViewMode === 'list'" (click)="setHistoryViewMode('list')">
+              📋 List Table
+            </button>
+            <button class="toggle-btn" [class.active]="historyViewMode === 'chart'" (click)="setHistoryViewMode('chart')">
+              📊 Sales Graph
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-row glass">
+        <div class="filter-group">
+          <label>Product Name</label>
+          <input type="text" [(ngModel)]="filterProductName" placeholder="Filter by product name...">
+        </div>
+        <div class="filter-group">
+          <label>Date of Sale</label>
+          <div class="date-input-wrapper">
+            <input type="date" [(ngModel)]="filterDate">
+            <button class="quick-date-btn" (click)="setFilterToday()">Today</button>
+          </div>
+        </div>
+        <button class="clear-filters-btn" *ngIf="filterProductName || filterDate" (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
     <div *ngIf="loading" class="loader-container">
       <div class="loader large"></div>
     </div>
 
-    <div *ngIf="!loading" class="history-list glass card">
+    <!-- Table View Mode -->
+    <div *ngIf="!loading && historyViewMode === 'list'" class="history-list glass card animate-fade-in">
       <table class="data-table">
         <thead>
           <tr>
@@ -159,7 +211,7 @@
             <th>Profit</th>
           </tr>
         </thead>
-        <tbody *ngFor="let sale of salesHistory">
+        <tbody *ngFor="let sale of filteredSalesHistory">
           <tr (click)="toggleDetails(sale.id)" class="clickable-row" [class.expanded]="expandedSaleId === sale.id">
             <td>{{ sale.createdAt | date:'short' }}</td>
             <td>{{ sale.shop?.name }}</td>
@@ -201,8 +253,35 @@
         </tbody>
       </table>
 
-      <div *ngIf="salesHistory.length === 0" class="empty-state">
-        <p>No sales records found.</p>
+      <div *ngIf="filteredSalesHistory.length === 0" class="empty-state">
+        <p>No matching sales records found.</p>
+      </div>
+    </div>
+
+    <!-- Graph View Mode -->
+    <div *ngIf="!loading && historyViewMode === 'chart'" class="sales-chart-container glass card animate-fade-in">
+      <div class="chart-header">
+        <h3>📊 Top Selling Products</h3>
+        <p class="chart-subtitle">Relative sales volume based on all historical transactions</p>
+      </div>
+      
+      <div class="chart-bars" *ngIf="topSellingProducts.length > 0">
+        <div *ngFor="let item of topSellingProducts" class="chart-bar-row">
+          <div class="chart-bar-info">
+            <span class="product-name font-bold">{{ item.name }}</span>
+            <span class="product-stats">
+              <span class="qty-sold">{{ item.quantity }} sold</span>
+              <span class="revenue-val">({{ item.revenue | inr }})</span>
+            </span>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar-fill" [style.width.%]="item.percentage"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="topSellingProducts.length === 0" class="empty-state">
+        <p>No sales data available to build graph.</p>
       </div>
     </div>
   </div>
