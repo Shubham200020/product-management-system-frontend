@@ -34,10 +34,18 @@ export class LoginComponent {
         console.error('Login error:', err);
         if (err.status === 401 || err.status === 403) {
           this.error = 'Invalid email or password';
-        } else if (err.error && err.error.message) {
-          this.error = err.error.message;
+        } else if (err.error) {
+          if (typeof err.error === 'string') {
+            this.error = err.error;
+          } else if (err.error.message) {
+            this.error = err.error.message;
+          } else if (err.error.error) {
+            this.error = err.error.error;
+          } else {
+            this.error = `Error ${err.status}: ${err.statusText || 'Server Error'}`;
+          }
         } else {
-          this.error = 'An error occurred during login. Please try again.';
+          this.error = `Connection Error (Status ${err.status}). Please verify that your backend server is online.`;
         }
         this.loading = false;
       }
