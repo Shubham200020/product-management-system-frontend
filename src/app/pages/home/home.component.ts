@@ -13,6 +13,8 @@ interface StatCard {
 import { ProductService } from '../../services/product.service';
 import { SalesService } from '../../services/sales.service';
 import { StatusService, SystemStatus } from '../../services/status.service';
+import { ShopService } from '../../services/shop.service';
+import { CategoryService } from '../../services/category.service';
 import { forkJoin, Observable } from 'rxjs';
 
 import { RouterModule, Router } from '@angular/router';
@@ -87,10 +89,19 @@ export class HomeComponent implements OnInit {
   recommendations: any[] = [];
   systemStatus$!: Observable<SystemStatus>;
 
+  // Onboarding Widget flags
+  hasShops = false;
+  hasCategories = false;
+  hasProducts = false;
+  hasStock = false;
+  showGuide = false;
+
   constructor(
     private productService: ProductService,
     private salesService: SalesService,
     private statusService: StatusService,
+    private shopService: ShopService,
+    private categoryService: CategoryService,
     private router: Router
   ) {}
 
@@ -113,6 +124,7 @@ export class HomeComponent implements OnInit {
 
   loadStats() {
     this.loading = true;
+    this.completedRequests = 0;
     
     // Load Products
     this.productService.getProducts().subscribe({
@@ -122,6 +134,9 @@ export class HomeComponent implements OnInit {
         const lowStockCount = safeProducts.filter(p => p.stockStatus === 'LOW_STOCK').length;
         const outOfStockCount = safeProducts.filter(p => p.stockStatus === 'OUT_OF_STOCK').length;
         const expiredCount = safeProducts.filter(p => p.stockStatus === 'EXPIRED').length;
+
+        this.hasProducts = safeProducts.length > 0;
+        this.hasStock = totalStock > 0;
 
         this.stats[0].value = safeProducts.length.toString();
         this.stats[0].change = 'Distinct products cataloged';
@@ -178,13 +193,75 @@ export class HomeComponent implements OnInit {
         this.checkLoadingComplete();
       }
     });
+
+    // Load Shops
+    this.shopService.getShops().subscribe({
+      next: (shops) => {
+        this.hasShops = (shops || []).length > 0;
+        this.checkLoadingComplete();
+      },
+      error: (err) => {
+        console.error('Error loading shops', err);
+        this.checkLoadingComplete();
+      }
+    });
+
+    // Load Categories
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.hasCategories = (categories || []).length > 0;
+        this.checkLoadingComplete();
+      },
+      error: (err) => {
+        console.error('Error loading categories', err);
+        this.checkLoadingComplete();
+      }
+    });
   }
 
   private completedRequests = 0;
   private checkLoadingComplete() {
     this.completedRequests++;
-    if (this.completedRequests >= 3) {
+    if (this.completedRequests >= 5) {
+      this.showGuide = !this.hasShops || !this.hasCategories || !this.hasProducts || !this.hasStock;
       this.loading = false;
     }
+  }
+
+  get setupSteps() {
+    return [
+      {
+        number: 1,
+        title: 'Create a Shop',
+        description: 'First, set up your shop details to manage its inventory.',
+        route: '/dashboard/shops',
+        status: this.hasShops ? 'completed' : 'active',
+        icon: '🏪'
+      },
+      {
+        number: 2,
+        title: 'Create a Category',
+        description: 'Define product categories tailored to your shop.',
+        route: '/dashboard/categories',
+        status: this.hasShops ? (this.hasCategories ? 'completed' : 'active') : 'locked',
+        icon: '📂'
+      },
+      {
+        number: 3,
+        title: 'Create a Product',
+        description: 'Add products with brand, SKU, and price details.',
+        route: '/dashboard/products',
+        status: (this.hasShops && this.hasCategories) ? (this.hasProducts ? 'completed' : 'active') : 'locked',
+        icon: '📦'
+      },
+      {
+        number: 4,
+        title: 'Add Initial Stock',
+        description: 'Record a purchase to bring stock into your inventory.',
+        route: '/dashboard/purchases',
+        status: (this.hasShops && this.hasCategories && this.hasProducts) ? (this.hasStock ? 'completed' : 'active') : 'locked',
+        icon: '💳'
+      }
+    ];
   }
 }
